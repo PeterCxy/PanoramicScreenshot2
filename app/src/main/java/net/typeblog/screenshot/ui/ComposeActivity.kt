@@ -38,7 +38,7 @@ class ComposeActivity: AppCompatActivity() {
     private val mAdapter = SelectionAdapter()
     private val mItemTouchHelper = ItemTouchHelper(ItemMoveHandler())
 
-    private var mProgressBarFrame: FrameLayout? = null
+    private lateinit var mProgressBarFrame: FrameLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,7 +86,7 @@ class ComposeActivity: AppCompatActivity() {
                 return
             }
 
-            mProgressBarFrame!!.visibility = View.VISIBLE
+            mProgressBarFrame.visibility = View.VISIBLE
 
             doAsync {
                 val addAction: Uri.() -> Unit = {
@@ -105,7 +105,7 @@ class ComposeActivity: AppCompatActivity() {
                 }
 
                 uiThread {
-                    mProgressBarFrame!!.visibility = View.GONE
+                    mProgressBarFrame.visibility = View.GONE
                     mAdapter.notifyDataSetChanged()
                 }
             }
@@ -144,10 +144,10 @@ class ComposeActivity: AppCompatActivity() {
 
     inner class SelectionAdapter: RecyclerView.Adapter<SelectionViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SelectionViewHolder {
-            var title: TextView? = null
-            var thumbnail: ImageView? = null
-            var reorder: ImageView? = null
-            var child: View? = null
+            lateinit var title: TextView
+            lateinit var thumbnail: ImageView
+            lateinit var reorder: ImageView
+            lateinit var child: View
             val root = AnkoContext.create(this@ComposeActivity, parent).apply {
                 relativeLayout {
                     backgroundResource = attr(android.R.attr.selectableItemBackground).resourceId
@@ -187,8 +187,8 @@ class ComposeActivity: AppCompatActivity() {
                 isClickable = true
             }
 
-            return SelectionViewHolder(root, child!!, title!!, thumbnail!!).apply {
-                reorder!!.onTouch { _, _ ->
+            return SelectionViewHolder(root, child, title, thumbnail).apply {
+                reorder.onTouch { _, _ ->
                     mItemTouchHelper.startDrag(this@apply)
                 }
             }
