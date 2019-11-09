@@ -91,7 +91,7 @@ class ComposeActivity: AppCompatActivity() {
                     // Only one picture is chosen
                     data.data?.apply(addAction)
                 } else {
-                    for (i in 0..data.clipData!!.itemCount) {
+                    for (i in 0 until data.clipData!!.itemCount) {
                         data.clipData!!.getItemAt(i).uri.apply(addAction)
                     }
                 }
