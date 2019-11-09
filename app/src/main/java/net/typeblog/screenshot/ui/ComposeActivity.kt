@@ -14,14 +14,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import net.typeblog.screenshot.R
 
+import net.typeblog.screenshot.R
 import net.typeblog.screenshot.util.*
 
 import org.jetbrains.anko.*
 import org.jetbrains.anko.recyclerview.v7.*
-import org.jetbrains.anko.sdk27.coroutines.onClick
-import org.jetbrains.anko.sdk27.coroutines.onTouch
+import org.jetbrains.anko.sdk27.coroutines.*
+
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
