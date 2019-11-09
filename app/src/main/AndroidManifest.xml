@@ -17,6 +17,8 @@
         </activity>
 
         <activity
-            android:name=".ui.ComposeActivity"/>
+            android:name=".ui.ComposeActivity"
+            android:label="@string/compose"
+            android:parentActivityName=".ui.MainActivity"/>
     </application>
 </manifest>
