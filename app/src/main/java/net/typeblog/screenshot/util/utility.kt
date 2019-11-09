@@ -7,8 +7,6 @@ import android.provider.OpenableColumns
 import android.graphics.BitmapFactory
 import android.graphics.Bitmap
 
-
-
 fun Activity.displayName(uri: Uri): String? {
     val cursor: Cursor? = contentResolver.query(
         uri, null, null, null, null, null)
