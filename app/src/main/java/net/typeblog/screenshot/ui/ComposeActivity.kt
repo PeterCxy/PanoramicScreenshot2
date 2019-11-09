@@ -11,13 +11,20 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import net.typeblog.screenshot.R
 
 import net.typeblog.screenshot.util.*
 
 import org.jetbrains.anko.*
 import org.jetbrains.anko.recyclerview.v7.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onTouch
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class ComposeActivity: AppCompatActivity() {
     companion object {
@@ -29,6 +36,7 @@ class ComposeActivity: AppCompatActivity() {
     private val mDisplayNames = HashMap<Uri, String?>()
     private val mPreview = HashMap<Uri, Bitmap?>()
     private val mAdapter = SelectionAdapter()
+    private val mItemTouchHelper = ItemTouchHelper(ItemMoveHandler())
 
     private var mProgressBarFrame: FrameLayout? = null
 
@@ -37,7 +45,7 @@ class ComposeActivity: AppCompatActivity() {
 
         relativeLayout {
             appBar(this@ComposeActivity)
-            recyclerView {
+            mItemTouchHelper.attachToRecyclerView(recyclerView {
                 topPadding = dip(10)
             }.lparams {
                 width = matchParent
@@ -46,7 +54,7 @@ class ComposeActivity: AppCompatActivity() {
             }.apply {
                 adapter = mAdapter
                 layoutManager = LinearLayoutManager(this@ComposeActivity)
-            }
+            })
 
             mProgressBarFrame = frameLayout {
                 backgroundResource = android.R.color.white
@@ -113,39 +121,77 @@ class ComposeActivity: AppCompatActivity() {
 
     data class SelectionViewHolder(
         val root: View,
+        val child: View,
         val title: TextView,
         val thumbnail: ImageView
-    ): RecyclerView.ViewHolder(root)
+    ): RecyclerView.ViewHolder(root) {
+        fun select() {
+            // Set root background to null to avoid conflicting with child
+            root.background = null
+            child.backgroundColor = root.context.getColor(R.color.colorSelected)
+            // To show the shadow of child (that's why we need this wrapper)
+            root.verticalPadding = root.context.dip(4)
+        }
+
+        fun deselect() {
+            // Restore everything
+            root.backgroundResource =
+                root.context.attr(android.R.attr.selectableItemBackground).resourceId
+            child.backgroundResource = 0
+            root.verticalPadding = 0
+        }
+    }
 
     inner class SelectionAdapter: RecyclerView.Adapter<SelectionViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SelectionViewHolder {
             var title: TextView? = null
             var thumbnail: ImageView? = null
+            var reorder: ImageView? = null
+            var child: View? = null
             val root = AnkoContext.create(this@ComposeActivity, parent).apply {
                 relativeLayout {
                     backgroundResource = attr(android.R.attr.selectableItemBackground).resourceId
-                    thumbnail = imageView {
-                        id = ID_THUMBNAIL
-                        scaleType = ImageView.ScaleType.CENTER_CROP
-                    }.lparams {
-                        width = dip(48)
-                        height = dip(48)
-                        margin = dip(10)
-                    }
+                    clipToPadding = false
+                    child = relativeLayout {
+                        elevation = dip(4).toFloat()
+                        thumbnail = imageView {
+                            id = ID_THUMBNAIL
+                            scaleType = ImageView.ScaleType.CENTER_CROP
+                        }.lparams {
+                            width = dip(48)
+                            height = dip(48)
+                            margin = dip(10)
+                        }
 
-                    title = textView {
-                        gravity = Gravity.CENTER_VERTICAL
-                    }.lparams {
-                        width = matchParent
-                        height = dip(68)
-                        rightOf(ID_THUMBNAIL)
+                        title = textView {
+                            gravity = Gravity.CENTER_VERTICAL
+                        }.lparams {
+                            width = matchParent
+                            height = dip(68)
+                            rightOf(ID_THUMBNAIL)
+                        }
+
+                        reorder = imageView {
+                            imageResource = R.drawable.ic_reorder_black_24dp
+                            isClickable = true
+                        }.lparams {
+                            width = wrapContent
+                            height = wrapContent
+                            alignParentRight()
+                            centerVertically()
+                            rightMargin = dip(10)
+                        }
                     }
                 }
             }.view.apply {
                 isClickable = true
             }
 
-            return SelectionViewHolder(root, title!!, thumbnail!!)
+            return SelectionViewHolder(root, child!!, title!!, thumbnail!!).apply {
+                reorder!!.onTouch { _, _ ->
+                    mItemTouchHelper.startDrag(this@apply)
+                }
+            }
         }
 
         override fun onBindViewHolder(holder: SelectionViewHolder, position: Int) {
@@ -156,5 +202,51 @@ class ComposeActivity: AppCompatActivity() {
         }
 
         override fun getItemCount(): Int = mUris.size
+    }
+
+    inner class ItemMoveHandler: ItemTouchHelper.Callback() {
+        override fun isLongPressDragEnabled(): Boolean = true
+        override fun isItemViewSwipeEnabled(): Boolean = false
+
+        override fun getMovementFlags(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder
+        ): Int = makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0)
+
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            val from = viewHolder.adapterPosition
+            val to = target.adapterPosition
+            if (from < to) {
+                for (i in from until to) {
+                    Collections.swap(mUris, i, i + 1)
+                }
+            } else {
+                for (i in from downTo (to + 1)) {
+                    Collections.swap(mUris, i, i - 1)
+                }
+            }
+            mAdapter.notifyItemMoved(from, to)
+            return true
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            // Not Supported
+        }
+
+        override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+            if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
+                (viewHolder as SelectionViewHolder).select()
+            }
+            super.onSelectedChanged(viewHolder, actionState)
+        }
+
+        override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+            (viewHolder as SelectionViewHolder).deselect()
+            super.clearView(recyclerView, viewHolder)
+        }
     }
 }
