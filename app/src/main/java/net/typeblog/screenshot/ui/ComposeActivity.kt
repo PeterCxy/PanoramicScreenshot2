@@ -1,5 +1,6 @@
 package net.typeblog.screenshot.ui
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -202,6 +203,15 @@ class ComposeActivity: AppCompatActivity() {
             holder.apply {
                 thumbnail.imageBitmap = mPreview[mUris[position]]
                 title.text = mDisplayNames[mUris[position]]
+                root.onClick {
+                    ActivityOptions.makeSceneTransitionAnimation(
+                        this@ComposeActivity, thumbnail, "image")
+                        .also {
+                            startActivity(Intent(this@ComposeActivity, ImageViewActivity::class.java).apply {
+                                putExtra("picUri", mUris[position])
+                            }, it.toBundle())
+                        }
+                }
             }
         }
 

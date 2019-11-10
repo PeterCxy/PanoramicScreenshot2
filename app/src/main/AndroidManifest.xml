@@ -19,6 +19,12 @@
         <activity
             android:name=".ui.ComposeActivity"
             android:label="@string/compose"
-            android:parentActivityName=".ui.MainActivity"/>
+            android:parentActivityName=".ui.MainActivity"
+            android:launchMode="singleTask"/>
+
+        <activity
+            android:name=".ui.ImageViewActivity"
+            android:theme="@style/AppThemeBlack"
+            android:parentActivityName=".ui.ComposeActivity"/>
     </application>
 </manifest>
