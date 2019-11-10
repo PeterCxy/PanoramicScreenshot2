@@ -129,8 +129,7 @@ class ComposeActivity: AppCompatActivity() {
             // Set root background to null to avoid conflicting with child
             root.background = null
             child.backgroundColor = root.context.getColor(R.color.colorSelected)
-            // To show the shadow of child (that's why we need this wrapper)
-            root.verticalPadding = root.context.dip(4)
+            child.elevation = root.context.dip(2).toFloat()
         }
 
         fun deselect() {
@@ -138,7 +137,7 @@ class ComposeActivity: AppCompatActivity() {
             root.backgroundResource =
                 root.context.attr(android.R.attr.selectableItemBackground).resourceId
             child.backgroundResource = 0
-            root.verticalPadding = 0
+            child.elevation = 0f
         }
     }
 
@@ -151,9 +150,10 @@ class ComposeActivity: AppCompatActivity() {
             val root = AnkoContext.create(this@ComposeActivity, parent).apply {
                 relativeLayout {
                     backgroundResource = attr(android.R.attr.selectableItemBackground).resourceId
+                    // To show the shadow of child (that's why we need this wrapper)
+                    verticalPadding = dip(4)
                     clipToPadding = false
                     child = relativeLayout {
-                        elevation = dip(4).toFloat()
                         thumbnail = imageView {
                             id = ID_THUMBNAIL
                             scaleType = ImageView.ScaleType.CENTER_CROP
