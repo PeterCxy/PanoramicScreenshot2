@@ -30,6 +30,7 @@ class ComposeActivity: AppCompatActivity() {
     companion object {
         const val REQUEST_CHOOSE_PICTURE = 1000
         const val ID_THUMBNAIL = 102333
+        const val ID_REORDER = 102334
     }
 
     private val mUris = ArrayList<Uri>()
@@ -158,17 +159,9 @@ class ComposeActivity: AppCompatActivity() {
                             id = ID_THUMBNAIL
                             scaleType = ImageView.ScaleType.CENTER_CROP
                         }.lparams {
-                            width = dip(48)
-                            height = dip(48)
+                            width = dip(96)
+                            height = dip(96)
                             margin = dip(10)
-                        }
-
-                        title = textView {
-                            gravity = Gravity.CENTER_VERTICAL
-                        }.lparams {
-                            width = matchParent
-                            height = dip(68)
-                            rightOf(ID_THUMBNAIL)
                         }
 
                         reorder = imageView {
@@ -180,6 +173,17 @@ class ComposeActivity: AppCompatActivity() {
                             alignParentRight()
                             centerVertically()
                             rightMargin = dip(10)
+                        }
+
+                        title = textView {
+                            gravity = Gravity.CENTER_VERTICAL
+                        }.lparams {
+                            width = matchParent
+                            height = wrapContent
+                            leftMargin = dip(10)
+                            centerVertically()
+                            rightOf(ID_THUMBNAIL)
+                            leftOf(ID_REORDER)
                         }
                     }
                 }

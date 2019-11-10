@@ -37,6 +37,6 @@ fun Activity.getPreview(uri: Uri): Bitmap? {
         bounds.outWidth
 
     val opts = BitmapFactory.Options()
-    opts.inSampleSize = originalSize / 8
+    opts.inSampleSize = originalSize / 512 // Sample size: 512px
     return BitmapFactory.decodeStream(stream, null, opts)
 }
