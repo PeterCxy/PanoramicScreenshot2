@@ -20,6 +20,10 @@ import org.jetbrains.anko.appcompat.v7.toolbar
 import org.jetbrains.anko.sdk27.coroutines.onTouch
 
 class ImageViewActivity: AppCompatActivity() {
+    companion object {
+        var picBmp: Bitmap? = null
+    }
+
     private lateinit var mGestureDetector: GestureDetector
     lateinit var mZoomView: ZoomImageView
 
@@ -28,7 +32,6 @@ class ImageViewActivity: AppCompatActivity() {
         mGestureDetector = GestureDetector(this, ImageGestureListener())
 
         val picUri = intent.getParcelableExtra<Uri>("picUri")
-        val picBmp = intent.getParcelableExtra<Bitmap>("picBmp")
 
         relativeLayout {
             layoutTransition = LayoutTransition()

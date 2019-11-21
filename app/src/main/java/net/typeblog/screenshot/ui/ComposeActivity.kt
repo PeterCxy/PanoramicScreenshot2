@@ -3,11 +3,10 @@ package net.typeblog.screenshot.ui
 import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.view.Gravity
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -17,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import net.typeblog.screenshot.R
+import net.typeblog.screenshot.core.ScreenshotComposer
 import net.typeblog.screenshot.util.*
 
 import org.jetbrains.anko.*
@@ -32,6 +32,9 @@ class ComposeActivity: AppCompatActivity() {
         const val REQUEST_CHOOSE_PICTURE = 1000
         const val ID_THUMBNAIL = 102333
         const val ID_REORDER = 102334
+
+        // Menu IDs
+        const val ID_FINISH = 112335
     }
 
     private val mUris = ArrayList<Uri>()
@@ -120,6 +123,41 @@ class ComposeActivity: AppCompatActivity() {
         type = "image/*"
         putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
     }, REQUEST_CHOOSE_PICTURE)
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menu!!.add(0, ID_FINISH, ID_FINISH, R.string.ok).apply {
+            icon = getDrawable(R.drawable.ic_check_black_24dp)
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        }
+
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            ID_FINISH -> {
+                doCompose()
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun doCompose() {
+        // TODO: Move these to another activity with proper animation
+        doAsync {
+            val result = ScreenshotComposer(mUris.map {
+                BitmapFactory.decodeStream(contentResolver.openInputStream(it))
+            }, 0.8f).compose() // TODO: allow threshold customization
+
+            uiThread {
+                // We can only pass bitmap by static variable
+                // because itw would be too large to fit into a binder call
+                ImageViewActivity.picBmp = result
+                startActivity(Intent(this@ComposeActivity, ImageViewActivity::class.java))
+            }
+        }
+    }
 
     data class SelectionViewHolder(
         val root: View,
