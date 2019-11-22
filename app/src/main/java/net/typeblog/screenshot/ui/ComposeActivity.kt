@@ -190,6 +190,7 @@ class ComposeActivity: AppCompatActivity() {
                         }
 
                         reorder = imageView {
+                            id = ID_REORDER
                             imageResource = R.drawable.ic_reorder_black_24dp
                             isClickable = true
                         }.lparams {
