@@ -5,4 +5,6 @@
     <string name="ok">OK</string>
     <string name="progress_diff">Image %d and %d of %d</string>
     <string name="composing">Composing&#8230;</string>
+    <string name="save">Save</string>
+    <string name="saved_to">Picture saved to %s</string>
 </resources>

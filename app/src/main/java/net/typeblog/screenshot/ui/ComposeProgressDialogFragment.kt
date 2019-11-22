@@ -90,7 +90,7 @@ class ComposeProgressDialogFragment(private val mUris: List<Uri>): DialogFragmen
                 // We can only pass bitmap by static variable
                 // because itw would be too large to fit into a binder call
                 ImageViewActivity.picBmp = result
-                startActivity(Intent(context, ImageViewActivity::class.java))
+                startActivity(Intent(context, ResultActivity::class.java))
                 dismiss()
             }
         }

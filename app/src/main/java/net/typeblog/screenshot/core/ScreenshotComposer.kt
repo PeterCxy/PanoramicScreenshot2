@@ -1,6 +1,7 @@
 package net.typeblog.screenshot.core
 
 import android.graphics.*
+import kotlinx.coroutines.runBlocking
 
 class ScreenshotComposer(bmps: List<Bitmap>, threshold: Float,
                          private val mListener: ProgressListener) {
@@ -32,7 +33,7 @@ class ScreenshotComposer(bmps: List<Bitmap>, threshold: Float,
 
         // Create a Canvas backed by the resulting Bitmap
         Canvas(ret).apply {
-            // All the calculateDiff()s should have been executed at this point due to totalHeight()
+            // All the calculateDiff()s should have been executed at this point
             mListener.onComposingStart()
 
             // Draw the header first bitmap

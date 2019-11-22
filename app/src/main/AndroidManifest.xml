@@ -26,5 +26,10 @@
             android:name=".ui.ImageViewActivity"
             android:theme="@style/AppThemeBlack"
             android:parentActivityName=".ui.ComposeActivity"/>
+
+        <activity
+            android:name=".ui.ResultActivity"
+            android:theme="@style/AppThemeBlack"
+            android:parentActivityName=".ui.ComposeActivity"/>
     </application>
 </manifest>

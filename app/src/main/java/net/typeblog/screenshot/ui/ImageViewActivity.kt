@@ -19,7 +19,7 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.appcompat.v7.toolbar
 import org.jetbrains.anko.sdk27.coroutines.onTouch
 
-class ImageViewActivity: AppCompatActivity() {
+open class ImageViewActivity: AppCompatActivity() {
     companion object {
         var picBmp: Bitmap? = null
     }
