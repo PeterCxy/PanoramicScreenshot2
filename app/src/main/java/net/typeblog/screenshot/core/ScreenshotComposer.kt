@@ -1,7 +1,6 @@
 package net.typeblog.screenshot.core
 
 import android.graphics.*
-import kotlinx.coroutines.runBlocking
 
 class ScreenshotComposer(bmps: List<Bitmap>, threshold: Float,
                          private val mListener: ProgressListener) {
