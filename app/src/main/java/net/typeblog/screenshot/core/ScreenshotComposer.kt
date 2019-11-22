@@ -4,8 +4,9 @@ import android.graphics.*
 
 class ScreenshotComposer(bmps: List<Bitmap>, threshold: Float) {
     private val mWidth = bmps[0].width // All bitmaps must match in width
+    private val mWidthIndicies = IntArray(mWidth) { it } // Pre-calculated index array, for BitmapLine
     private val mDiffs = (0 until (bmps.size - 1)).map { i ->
-        BitmapDiff(bmps[i], bmps[i + 1], threshold)
+        BitmapDiff(bmps[i], bmps[i + 1], threshold, mWidthIndicies)
     }
 
     // Calculate the total height of the final image

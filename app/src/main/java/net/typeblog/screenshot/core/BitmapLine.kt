@@ -1,6 +1,7 @@
 package net.typeblog.screenshot.core
 
-class BitmapLine(val width: Int, private val threshold: Float) {
+class BitmapLine(val width: Int, private val threshold: Float,
+                 private val widthIndicies: IntArray) {
     val pixels = IntArray(width)
 
     override fun equals(other: Any?): Boolean {
@@ -12,12 +13,15 @@ class BitmapLine(val width: Int, private val threshold: Float) {
             throw BitmapDiff.DimensionMismatchException()
         }
 
-        var counter = 0
-        for (i in 0 until width) {
-            if (this.pixels[i] == other.pixels[i]) {
-                counter++
-            }
-        }
+        // OPTIMIZATION: Use a pre-defined IntArray for indicies
+        //    This way, we are actually calling IntArray.count()
+        //    instead of Iterator.count(), which is manually inlined
+        //    to be a simple for loop. The Iterator implementation
+        //    spends all its time in next(), which somehow did not
+        //    get inlined by the virtual machine even if it is executed
+        //    thousands of times
+        val counter = widthIndicies
+            .count { i -> this.pixels[i] == other.pixels[i] }
 
         return counter >= width * threshold
     }
