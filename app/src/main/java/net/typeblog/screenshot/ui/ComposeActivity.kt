@@ -145,7 +145,7 @@ class ComposeActivity: AppCompatActivity() {
 
     private fun doCompose() {
         // TODO: Move these to another activity with proper animation
-        doAsync {
+        /*doAsync {
             val result = ScreenshotComposer(mUris.map {
                 BitmapFactory.decodeStream(contentResolver.openInputStream(it))
             }, 0.8f).compose() // TODO: allow threshold customization
@@ -156,7 +156,8 @@ class ComposeActivity: AppCompatActivity() {
                 ImageViewActivity.picBmp = result
                 startActivity(Intent(this@ComposeActivity, ImageViewActivity::class.java))
             }
-        }
+        }*/
+        ComposeProgressDialogFragment(mUris).show(supportFragmentManager, "PROGRESS")
     }
 
     data class SelectionViewHolder(

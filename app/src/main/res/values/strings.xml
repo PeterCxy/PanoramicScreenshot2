@@ -3,4 +3,6 @@
     <string name="start">Start</string>
     <string name="compose">Compose</string>
     <string name="ok">OK</string>
+    <string name="progress_diff">Image %d and %d of %d</string>
+    <string name="composing">Composing&#8230;</string>
 </resources>

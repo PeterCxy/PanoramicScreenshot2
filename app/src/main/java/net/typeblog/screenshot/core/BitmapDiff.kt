@@ -6,7 +6,8 @@ import java.lang.Exception
 
 class BitmapDiff(bmp1: Bitmap, bmp2: Bitmap,
                  private val mThreshold: Float,
-                 private val mWidthIndicies: IntArray) {
+                 private val mWidthIndicies: IntArray,
+                 private val mListener: ScreenshotComposer.ProgressListener) {
     class DimensionMismatchException: Exception()
 
     val mBmps: Pair<Bitmap, Bitmap> = Pair(bmp1, bmp2)
@@ -30,6 +31,11 @@ class BitmapDiff(bmp1: Bitmap, bmp2: Bitmap,
                 mBmps.first.height == mBmps.second.height
 
     private fun calculateDiff(): CommonSubstring {
+        // This method will only be called once (the first use of `diff`)
+        // so it is safe to just notify the caller here about the progress
+        // all the later use of `diff` are of no significance and can be ignored
+        mListener.onDiffNext()
+
         val leftLines = mBmps.first.toLines()
         val rightLines = mBmps.second.toLines()
 

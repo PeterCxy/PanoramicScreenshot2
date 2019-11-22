@@ -2,11 +2,17 @@ package net.typeblog.screenshot.core
 
 import android.graphics.*
 
-class ScreenshotComposer(bmps: List<Bitmap>, threshold: Float) {
+class ScreenshotComposer(bmps: List<Bitmap>, threshold: Float,
+                         private val mListener: ProgressListener) {
+    interface ProgressListener {
+        fun onDiffNext()
+        fun onComposingStart()
+    }
+
     private val mWidth = bmps[0].width // All bitmaps must match in width
     private val mWidthIndicies = IntArray(mWidth) { it } // Pre-calculated index array, for BitmapLine
     private val mDiffs = (0 until (bmps.size - 1)).map { i ->
-        BitmapDiff(bmps[i], bmps[i + 1], threshold, mWidthIndicies)
+        BitmapDiff(bmps[i], bmps[i + 1], threshold, mWidthIndicies, mListener)
     }
 
     // Calculate the total height of the final image
@@ -26,6 +32,9 @@ class ScreenshotComposer(bmps: List<Bitmap>, threshold: Float) {
 
         // Create a Canvas backed by the resulting Bitmap
         Canvas(ret).apply {
+            // All the calculateDiff()s should have been executed at this point due to totalHeight()
+            mListener.onComposingStart()
+
             // Draw the header first bitmap
             drawBitmap(
                 mDiffs[0].mBmps.first,
