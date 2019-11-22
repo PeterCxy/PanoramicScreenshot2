@@ -10,38 +10,43 @@ data class CommonSubstring(
     val rightEnd: Int
 )
 
+fun <T, U> Sequence<T>.cartesianProduct(b: Sequence<U>): Sequence<Pair<T, U>> =
+    flatMap { itemA -> b.map { itemB -> Pair(itemA, itemB) } }
+
 // Implementation of Longest Common Substring with Generalized Type and DP
 // Reference: <https://en.wikipedia.org/wiki/Longest_common_substring_problem>
 // When writing the algorithm, I realized that our application is no more than
 // a LCS with BitmapLines instead of Strings
-fun <T> lcs(src: List<T>, target: List<T>): List<CommonSubstring> {
-    // The dynamic programming cache memory (keep name consistent with wiki)
-    @Suppress("LocalVariableName")
-    val L = Array(src.size) { IntArray(target.size) }
-    // The current longest substring length
-    var z = 0
-    var ret = mutableListOf<CommonSubstring>()
-    for (i in src.indices) {
-        for (j in target.indices) {
-            if (src[i] == target[j]) {
-                if (i == 0 || j == 0) {
-                    L[i][j] = 1
-                } else {
-                    L[i][j] = L[i - 1][j - 1] + 1
-                }
+fun <T> lcs(src: List<T>, target: List<T>): List<CommonSubstring> =
+    src.asSequence().withIndex()
+        .cartesianProduct(target.asSequence().withIndex())
+        .filter { (itemA, itemB) -> itemA.value == itemB.value }
+        .map { (itemA, itemB) -> Pair(itemA.index, itemB.index) }
+        .fold(Triple(
+            Array(src.size) { IntArray(target.size) } /* L */,
+            0 /* Z */,
+            mutableListOf<CommonSubstring>() /* ret */)
+        ) {
+                (L, z, ret), (i, j) ->
 
-                if (L[i][j] > z) {
-                    z = L[i][j]
+            if (i == 0 || j == 0) {
+                L[i][j] = 1
+            } else {
+                L[i][j] = L[i - 1][j - 1] + 1
+            }
+
+            when {
+                L[i][j] > z -> {
                     ret.clear()
                     ret.add(CommonSubstring(i - z + 1, i, j - z + 1, j))
-                } else if (L[i][j] == z) {
-                    ret.add(CommonSubstring(i - z + 1, i, j - z + 1, j))
+                    Triple(L, L[i][j], ret)
                 }
-            } else {
-                L[i][j] = 0
+                L[i][j] == z -> {
+                    ret.add(CommonSubstring(i - z + 1, i, j - z + 1, j))
+                    Triple(L, z, ret)
+                }
+                else -> {
+                    Triple(L, z, ret)
+                }
             }
-        }
-    }
-
-    return ret
-}
+        }.third
