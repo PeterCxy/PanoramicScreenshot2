@@ -40,8 +40,6 @@ class BitmapDiff(bmp1: Bitmap, bmp2: Bitmap,
 
     private fun Bitmap.toLines(): List<BitmapLine> =
         (0 until height).map { i ->
-            BitmapLine(width, mThreshold, mWidthIndicies).also {
-                getPixels(it.pixels, 0, width, 0, i, width, 1)
-            }
+            BitmapLine(this, i, mThreshold, mWidthIndicies)
         }
 }

@@ -1,8 +1,16 @@
 package net.typeblog.screenshot.core
 
-class BitmapLine(val width: Int, private val threshold: Float,
+import android.graphics.Bitmap
+
+class BitmapLine(bmp: Bitmap, line: Int,
+                 private val threshold: Float,
                  private val widthIndicies: IntArray) {
+    val width = bmp.width
     val pixels = IntArray(width)
+
+    init {
+        bmp.getPixels(pixels, 0, width, 0, line, width, 1)
+    }
 
     override fun equals(other: Any?): Boolean {
         if (other !is BitmapLine) {
