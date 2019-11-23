@@ -23,7 +23,8 @@
         Below are parameters available for tweaking the scan-and-compare process.&lt;br/>&lt;br/>
 
         &lt;b>Sensitivity&lt;/b>: Controls how much (in percentage) of two lines should be the same in order to consider them identical.
-        This is useful if the screenshots contain minor obstructions, e.g. scroll bars.&lt;br/>&lt;br/>
+        This is useful if the screenshots contain minor obstructions, e.g. scroll bars. If you see too much artifact
+        in the result, try increasing this; if the result is totally incorrect, try decreasing this.&lt;br/>&lt;br/>
 
         &lt;b>Skip Ratio&lt;/b>: When comparing each pair, how much of the first picture (from the top) and the second picture (from the bottom)
         should the algorithm ignore. This can reduce the scanning time dramatically because the overlapping area between each pair
