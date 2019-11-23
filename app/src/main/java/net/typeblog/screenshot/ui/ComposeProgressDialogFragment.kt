@@ -10,9 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 
 import net.typeblog.screenshot.R
+import net.typeblog.screenshot.core.BitmapDiff
 import net.typeblog.screenshot.core.ScreenshotComposer
 
 import org.jetbrains.anko.*
@@ -87,16 +89,24 @@ class ComposeProgressDialogFragment(
                 }
             }
 
-            val result = ScreenshotComposer(mUris.map {
-                BitmapFactory.decodeStream(context!!.contentResolver.openInputStream(it))
-            }, mSensitivity, mSampleRatio, mSkip, listener).compose()
+            try {
+                val result = ScreenshotComposer(mUris.map {
+                    BitmapFactory.decodeStream(context!!.contentResolver.openInputStream(it))
+                }, mSensitivity, mSampleRatio, mSkip, listener).compose()
 
-            uiThread {
-                // We can only pass bitmap by static variable
-                // because itw would be too large to fit into a binder call
-                ImageViewActivity.picBmp = result
-                startActivity(Intent(context, ResultActivity::class.java))
-                dismiss()
+                uiThread {
+                    // We can only pass bitmap by static variable
+                    // because itw would be too large to fit into a binder call
+                    ImageViewActivity.picBmp = result
+                    startActivity(Intent(context, ResultActivity::class.java))
+                    dismiss()
+                }
+            } catch (e: BitmapDiff.DimensionMismatchException) {
+                uiThread {
+                    Toast.makeText(context!!, R.string.dimension_mismatch, Toast.LENGTH_SHORT)
+                        .show()
+                    dismiss()
+                }
             }
         }
     }

@@ -13,4 +13,5 @@
     <string name="sample_ratio_text">Subsample Ratio: %.0f</string>
     <string name="options_note">Note: options below do not affect the resolution and dimension of the final product.</string>
     <string name="not_enough_pictures">Please choose 2 or more pictures first.</string>
+    <string name="dimension_mismatch">Picture dimension mismatch.</string>
 </resources>
