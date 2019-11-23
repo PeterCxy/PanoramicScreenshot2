@@ -28,11 +28,13 @@ import kotlin.collections.HashMap
 class ComposeActivity: AppCompatActivity() {
     companion object {
         const val REQUEST_CHOOSE_PICTURE = 1000
+        const val REQUEST_SETTINGS = 1001
         const val ID_THUMBNAIL = 102333
         const val ID_REORDER = 102334
 
         // Menu IDs
         const val ID_FINISH = 112335
+        const val ID_SETTINGS = 112336
     }
 
     private val mUris = ArrayList<Uri>()
@@ -42,6 +44,11 @@ class ComposeActivity: AppCompatActivity() {
     private val mItemTouchHelper = ItemTouchHelper(ItemMoveHandler())
 
     private lateinit var mProgressBarFrame: FrameLayout
+
+    // TODO: Make these permanent in SharedPreferences?
+    private var mSensitivity: Float = 0.9f
+    private var mSkip: Float = 0.5f
+    private var mSampleRatio: Int = 4
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,6 +119,10 @@ class ComposeActivity: AppCompatActivity() {
                     mAdapter.notifyDataSetChanged()
                 }
             }
+        } else if (requestCode == REQUEST_SETTINGS && resultCode == RESULT_OK) {
+            mSensitivity = data!!.getFloatExtra("sensitivity", mSensitivity)
+            mSkip = data.getFloatExtra("skip", mSkip)
+            mSampleRatio = data.getIntExtra("sample_ratio", mSampleRatio)
         }
     }
 
@@ -128,6 +139,11 @@ class ComposeActivity: AppCompatActivity() {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
 
+        menu!!.add(0, ID_SETTINGS, ID_SETTINGS, R.string.options).apply {
+            icon = getDrawable(R.drawable.ic_settings_black_24dp)
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        }
+
         return true
     }
 
@@ -137,12 +153,27 @@ class ComposeActivity: AppCompatActivity() {
                 doCompose()
                 return true
             }
+            ID_SETTINGS -> {
+                doSettings()
+                return true
+            }
         }
         return false
     }
 
     private fun doCompose() {
-        ComposeProgressDialogFragment(mUris).show(supportFragmentManager, "PROGRESS")
+        ComposeProgressDialogFragment(mUris, mSensitivity, mSkip, mSampleRatio)
+            .show(supportFragmentManager, "PROGRESS")
+    }
+
+    private fun doSettings() {
+        startActivityForResult(Intent(this, OptionsActivity::class.java).apply {
+            putExtra("sensitivity", mSensitivity)
+            putExtra("skip", mSkip)
+            putExtra("sample_ratio", mSampleRatio)
+            putExtra("bmp1", mUris[0])
+            putExtra("bmp2", mUris[1])
+        }, REQUEST_SETTINGS)
     }
 
     data class SelectionViewHolder(

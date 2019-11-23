@@ -7,4 +7,9 @@
     <string name="composing">Composing&#8230;</string>
     <string name="save">Save</string>
     <string name="saved_to">Picture saved to %s</string>
+    <string name="options">Options</string>
+    <string name="sensitivity_text">Sensitivity: %.2f</string>
+    <string name="skip_text">Skip Ratio: %.2f</string>
+    <string name="sample_ratio_text">Subsample Ratio: %.0f</string>
+    <string name="options_note">Note: options below do not affect the resolution and dimension of the final product.</string>
 </resources>

@@ -3,6 +3,7 @@ package net.typeblog.screenshot.core
 import android.graphics.*
 
 class ScreenshotComposer(bmps: List<Bitmap>, threshold: Float,
+                         sampleRatio: Int, skip: Float,
                          private val mListener: ProgressListener) {
     interface ProgressListener {
         fun onDiffNext()
@@ -13,9 +14,9 @@ class ScreenshotComposer(bmps: List<Bitmap>, threshold: Float,
     // Pre-calculated index array, for BitmapLine
     // `step` is downsampling ratio (TODO: should be customizable)
     private val mWidthIndicies =
-        (0 until mWidth step 4).toList().toIntArray()
+        (0 until mWidth step sampleRatio).toList().toIntArray()
     private val mDiffs = (0 until (bmps.size - 1)).map { i ->
-        BitmapDiff(bmps[i], bmps[i + 1], threshold, mWidthIndicies, mListener)
+        BitmapDiff(bmps[i], bmps[i + 1], threshold, skip, mWidthIndicies, mListener)
     }
 
     // Calculate the total height of the final image

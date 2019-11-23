@@ -18,7 +18,12 @@ import net.typeblog.screenshot.core.ScreenshotComposer
 import org.jetbrains.anko.*
 import org.jetbrains.anko.support.v4.*
 
-class ComposeProgressDialogFragment(private val mUris: List<Uri>): DialogFragment() {
+class ComposeProgressDialogFragment(
+    private val mUris: List<Uri>,
+    private val mSensitivity: Float,
+    private val mSkip: Float,
+    private val mSampleRatio: Int): DialogFragment() {
+
     companion object {
         const val ID_PROGRESS_DIFF = 122333
         const val ID_PROGRESS_DIFF_TEXT = 122334
@@ -84,7 +89,7 @@ class ComposeProgressDialogFragment(private val mUris: List<Uri>): DialogFragmen
 
             val result = ScreenshotComposer(mUris.map {
                 BitmapFactory.decodeStream(context!!.contentResolver.openInputStream(it))
-            }, 0.8f, listener).compose() // TODO: allow threshold customization
+            }, mSensitivity, mSampleRatio, mSkip, listener).compose()
 
             uiThread {
                 // We can only pass bitmap by static variable

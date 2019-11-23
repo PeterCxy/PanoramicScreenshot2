@@ -6,6 +6,7 @@ import java.lang.Exception
 
 class BitmapDiff(bmp1: Bitmap, bmp2: Bitmap,
                  private val mThreshold: Float,
+                 private val mSkip: Float,
                  private val mWidthIndicies: IntArray,
                  private val mListener: ScreenshotComposer.ProgressListener) {
     class DimensionMismatchException: Exception()
@@ -36,15 +37,14 @@ class BitmapDiff(bmp1: Bitmap, bmp2: Bitmap,
         // all the later use of `diff` are of no significance and can be ignored
         mListener.onDiffNext()
 
-        val skip = 0.5f // TODO: should be customizable
-        val leftLines = mBmps.first.toLines(skip, 1f)
-        val rightLines = mBmps.second.toLines(0f, 1f - skip)
+        val leftLines = mBmps.first.toLines(mSkip, 1f)
+        val rightLines = mBmps.second.toLines(0f, 1f - mSkip)
 
         val commons = lcs(leftLines, rightLines)
         // TODO: how to deal with multiple common substrs?
         return commons[0].copy(
-            leftStart = commons[0].leftStart + (mBmps.first.height * skip).toInt(),
-            leftEnd = commons[0].leftEnd + (mBmps.first.height * skip).toInt())
+            leftStart = commons[0].leftStart + (mBmps.first.height * mSkip).toInt(),
+            leftEnd = commons[0].leftEnd + (mBmps.first.height * mSkip).toInt())
     }
 
     private fun Bitmap.toLines(from: Float, to: Float): List<BitmapLine> =

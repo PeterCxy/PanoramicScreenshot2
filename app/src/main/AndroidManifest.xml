@@ -23,6 +23,12 @@
             android:launchMode="singleTask"/>
 
         <activity
+            android:name=".ui.OptionsActivity"
+            android:label="@string/options"
+            android:parentActivityName=".ui.ComposeActivity"
+            android:launchMode="singleTask"/>
+
+        <activity
             android:name=".ui.ImageViewActivity"
             android:theme="@style/AppThemeBlack"
             android:parentActivityName=".ui.ComposeActivity"/>
