@@ -135,13 +135,13 @@ class ComposeActivity: AppCompatActivity() {
     }, REQUEST_CHOOSE_PICTURE)
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menu!!.add(0, ID_FINISH, ID_FINISH, R.string.ok).apply {
-            icon = getDrawable(R.drawable.ic_check_black_24dp)
+        menu!!.add(0, ID_SETTINGS, 0, R.string.options).apply {
+            icon = getDrawable(R.drawable.ic_settings_black_24dp)
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
 
-        menu.add(0, ID_SETTINGS, ID_SETTINGS, R.string.options).apply {
-            icon = getDrawable(R.drawable.ic_settings_black_24dp)
+        menu.add(0, ID_FINISH, 1, R.string.ok).apply {
+            icon = getDrawable(R.drawable.ic_check_black_24dp)
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
 
