@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
+import android.graphics.Matrix
 import android.graphics.Paint
+import android.graphics.RectF
 import android.os.Bundle
 import android.text.Html
 import android.view.Gravity
@@ -277,13 +279,28 @@ class OptionsActivity: AppCompatActivity() {
             alpha = 50
         }
 
+        @SuppressLint("DrawAllocation")
         override fun onDraw(canvas: Canvas?) {
             super.onDraw(canvas)
+            // Calculate original widths and heights of the image by using inverted matrix
+            // Assumption: The image is FIT_CENTER, i.e. the center point of view is
+            //   also the center of the original image
+            val invertMatrix = Matrix()
+            val centerPoint = floatArrayOf(measuredWidth.toFloat() / 2, measuredHeight.toFloat() / 2)
+            imageMatrix.invert(invertMatrix)
+            invertMatrix.mapPoints(centerPoint)
+            val origWidth = centerPoint[0] * 2
+            val origHeight = centerPoint[1] * 2
 
-            canvas!!.drawRect(0f, 0f, measuredWidth.toFloat(),
-                coverTop * measuredHeight, coverPaint)
-            canvas.drawRect(0f, (1 - coverBottom) * measuredHeight,
-                measuredWidth.toFloat(), measuredHeight.toFloat(), coverPaint)
+            // Now transform covering rectangles with the same transformation matrix of the image
+            val rCoverTop = RectF(0f, 0f, origWidth, origHeight * coverTop)
+            val rCoverBottom = RectF(0f, (1 - coverBottom) * origHeight, origWidth, origHeight)
+            imageMatrix.mapRect(rCoverTop)
+            imageMatrix.mapRect(rCoverBottom)
+
+            // We are guaranteed these transformed rectangles will be within the original image
+            canvas!!.drawRect(rCoverTop, coverPaint)
+            canvas.drawRect(rCoverBottom, coverPaint)
         }
     }
 }
