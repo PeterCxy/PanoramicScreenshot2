@@ -19,6 +19,7 @@ import net.typeblog.screenshot.R
 import net.typeblog.screenshot.util.*
 
 import org.jetbrains.anko.*
+import org.jetbrains.anko.design.floatingActionButton
 import org.jetbrains.anko.recyclerview.v7.*
 import org.jetbrains.anko.sdk27.coroutines.*
 
@@ -34,7 +35,6 @@ class ComposeActivity: AppCompatActivity() {
         const val ID_REORDER = 102334
 
         // Menu IDs
-        const val ID_FINISH = 112335
         const val ID_SETTINGS = 112336
         const val ID_ADD = 112337
     }
@@ -79,6 +79,16 @@ class ComposeActivity: AppCompatActivity() {
                 height = matchParent
                 below(ID_APPBAR)
             }
+
+            floatingActionButton {
+                imageResource = R.drawable.ic_check_white_24dp
+            }.lparams {
+                width = wrapContent
+                height = wrapContent
+                margin = dip(16)
+                alignParentEnd()
+                alignParentBottom()
+            }.onClick { doCompose() }
         }
 
         supportActionBar!!.apply {
@@ -131,17 +141,12 @@ class ComposeActivity: AppCompatActivity() {
     }, REQUEST_CHOOSE_PICTURE)
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menu!!.add(0, ID_SETTINGS, 0, R.string.options).apply {
+        menu!!.add(0, ID_SETTINGS, 1, R.string.options).apply {
             icon = getDrawable(R.drawable.ic_settings_black_24dp)
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
 
-        menu.add(0, ID_FINISH, 2, R.string.ok).apply {
-            icon = getDrawable(R.drawable.ic_check_black_24dp)
-            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-        }
-
-        menu.add(0, ID_ADD, 1, R.string.add).apply {
+        menu.add(0, ID_ADD, 0, R.string.add).apply {
             icon = getDrawable(R.drawable.ic_add_black_24dp)
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
@@ -151,10 +156,6 @@ class ComposeActivity: AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            ID_FINISH -> {
-                doCompose()
-                return true
-            }
             ID_SETTINGS -> {
                 doSettings()
                 return true
