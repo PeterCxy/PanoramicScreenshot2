@@ -7,7 +7,7 @@ import java.lang.Exception
 class BitmapDiff(bmp1: Bitmap, bmp2: Bitmap,
                  private val mThreshold: Float,
                  private val mSkip: Float,
-                 private val mWidthIndicies: IntArray,
+                 private val mWidthIndices: IntArray,
                  private val mListener: ScreenshotComposer.ProgressListener) {
     class DimensionMismatchException: Exception()
 
@@ -49,6 +49,6 @@ class BitmapDiff(bmp1: Bitmap, bmp2: Bitmap,
 
     private fun Bitmap.toLines(from: Float, to: Float): List<BitmapLine> =
         ((from * height).toInt() until (to * height).toInt()).map { i ->
-            BitmapLine(this, i, mThreshold, mWidthIndicies)
+            BitmapLine(this, i, mThreshold, mWidthIndices)
         }
 }

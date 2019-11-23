@@ -13,10 +13,10 @@ class ScreenshotComposer(bmps: List<Bitmap>, threshold: Float,
     private val mWidth = bmps[0].width // All bitmaps must match in width
     // Pre-calculated index array, for BitmapLine
     // `step` is downsampling ratio (TODO: should be customizable)
-    private val mWidthIndicies =
+    private val mWidthIndices =
         (0 until mWidth step sampleRatio).toList().toIntArray()
     private val mDiffs = (0 until (bmps.size - 1)).map { i ->
-        BitmapDiff(bmps[i], bmps[i + 1], threshold, skip, mWidthIndicies, mListener)
+        BitmapDiff(bmps[i], bmps[i + 1], threshold, skip, mWidthIndices, mListener)
     }
 
     // Calculate the total height of the final image
