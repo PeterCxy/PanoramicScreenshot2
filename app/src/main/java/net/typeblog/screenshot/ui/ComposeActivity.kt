@@ -140,7 +140,7 @@ class ComposeActivity: AppCompatActivity() {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
 
-        menu!!.add(0, ID_SETTINGS, ID_SETTINGS, R.string.options).apply {
+        menu.add(0, ID_SETTINGS, ID_SETTINGS, R.string.options).apply {
             icon = getDrawable(R.drawable.ic_settings_black_24dp)
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
