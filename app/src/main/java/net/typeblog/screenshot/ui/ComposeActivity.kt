@@ -36,6 +36,7 @@ class ComposeActivity: AppCompatActivity() {
         // Menu IDs
         const val ID_FINISH = 112335
         const val ID_SETTINGS = 112336
+        const val ID_ADD = 112337
     }
 
     private val mUris = ArrayList<Uri>()
@@ -91,12 +92,7 @@ class ComposeActivity: AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == REQUEST_CHOOSE_PICTURE) {
-            if (resultCode != RESULT_OK) {
-                finish()
-                return
-            }
-
+        if (requestCode == REQUEST_CHOOSE_PICTURE && resultCode == RESULT_OK) {
             mProgressBarFrame.visibility = View.VISIBLE
 
             doAsync {
@@ -140,8 +136,13 @@ class ComposeActivity: AppCompatActivity() {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
 
-        menu.add(0, ID_FINISH, 1, R.string.ok).apply {
+        menu.add(0, ID_FINISH, 2, R.string.ok).apply {
             icon = getDrawable(R.drawable.ic_check_black_24dp)
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        }
+
+        menu.add(0, ID_ADD, 1, R.string.add).apply {
+            icon = getDrawable(R.drawable.ic_add_black_24dp)
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
 
@@ -156,6 +157,10 @@ class ComposeActivity: AppCompatActivity() {
             }
             ID_SETTINGS -> {
                 doSettings()
+                return true
+            }
+            ID_ADD -> {
+                addPictures()
                 return true
             }
         }
