@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.os.Bundle
+import android.text.Html
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
@@ -14,6 +15,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import net.typeblog.screenshot.R
 
@@ -32,6 +34,7 @@ class OptionsActivity: AppCompatActivity() {
         const val ID_OPTIONS_NOTE = 33339
 
         const val ID_MENU_FINISH = 33400
+        const val ID_MENU_HELP = 33401
     }
 
     private var mSensitivity: Float = 0.0f
@@ -201,8 +204,13 @@ class OptionsActivity: AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menu!!.add(0, ID_MENU_FINISH, ID_MENU_FINISH, R.string.ok).apply {
+        menu!!.add(0, ID_MENU_FINISH, 1, R.string.ok).apply {
             icon = getDrawable(R.drawable.ic_check_black_24dp)
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        }
+
+        menu!!.add(0, ID_MENU_HELP, 0, R.string.help).apply {
+            icon = getDrawable(R.drawable.ic_help_outline_black_24dp)
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
 
@@ -218,6 +226,14 @@ class OptionsActivity: AppCompatActivity() {
                     putExtra("sample_ratio", mSampleRatio)
                 })
                 finish()
+                return true
+            }
+            ID_MENU_HELP -> {
+                AlertDialog.Builder(this).apply {
+                    setMessage(Html.fromHtml(getString(R.string.options_help_txt).trimIndent(),
+                        Html.FROM_HTML_MODE_LEGACY))
+                    setPositiveButton(R.string.ok, null)
+                }.show()
                 return true
             }
         }

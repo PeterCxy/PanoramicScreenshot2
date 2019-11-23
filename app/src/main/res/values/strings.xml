@@ -16,4 +16,21 @@
     <string name="dimension_mismatch">Picture dimension mismatch.</string>
     <string name="loading_pictures">Loading pictures&#8230;</string>
     <string name="add">Add</string>
+    <string name="help">Help</string>
+    <string name="options_help_txt">
+        Panoramic Screenshot composes pictures by first scanning them in pairs and compare
+        which parts are common among each pair.
+        Below are parameters available for tweaking the scan-and-compare process.&lt;br/>&lt;br/>
+
+        &lt;b>Sensitivity&lt;/b>: Controls how much (in percentage) of two lines should be the same in order to consider them identical.
+        This is useful if the screenshots contain minor obstructions, e.g. scroll bars.&lt;br/>&lt;br/>
+
+        &lt;b>Skip Ratio&lt;/b>: When comparing each pair, how much of the first picture (from the top) and the second picture (from the bottom)
+        should the algorithm ignore. This can reduce the scanning time dramatically because the overlapping area between each pair
+        should only appear at the bottom of the first and at the top of the second.&lt;br/>&lt;br/>
+
+        &lt;b>Subsample Ratio&lt;/b>: When comparing, scale each image down by this amount (e.g. 4 times by default) first. This also reduces
+        scanning time and will not affect the result if not too large. This will not affect the final resolution. Image will still
+        be concatenated in their original size.
+    </string>
 </resources>
