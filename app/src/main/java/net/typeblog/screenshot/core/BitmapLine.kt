@@ -31,6 +31,7 @@ class BitmapLine(bmp: Bitmap, line: Int,
         val counter = widthIndicies
             .count { i -> this.pixels[i] == other.pixels[i] }
 
-        return counter >= width * threshold
+        // Might have been downsampled, so we have to use widthIndicies.size
+        return counter >= widthIndicies.size * threshold
     }
 }

@@ -36,16 +36,19 @@ class BitmapDiff(bmp1: Bitmap, bmp2: Bitmap,
         // all the later use of `diff` are of no significance and can be ignored
         mListener.onDiffNext()
 
-        val leftLines = mBmps.first.toLines()
-        val rightLines = mBmps.second.toLines()
+        val skip = 0.5f // TODO: should be customizable
+        val leftLines = mBmps.first.toLines(skip, 1f)
+        val rightLines = mBmps.second.toLines(0f, 1f - skip)
 
         val commons = lcs(leftLines, rightLines)
         // TODO: how to deal with multiple common substrs?
-        return commons[0]
+        return commons[0].copy(
+            leftStart = commons[0].leftStart + (mBmps.first.height * skip).toInt(),
+            leftEnd = commons[0].leftEnd + (mBmps.first.height * skip).toInt())
     }
 
-    private fun Bitmap.toLines(): List<BitmapLine> =
-        (0 until height).map { i ->
+    private fun Bitmap.toLines(from: Float, to: Float): List<BitmapLine> =
+        ((from * height).toInt() until (to * height).toInt()).map { i ->
             BitmapLine(this, i, mThreshold, mWidthIndicies)
         }
 }
