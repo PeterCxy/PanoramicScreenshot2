@@ -2,6 +2,7 @@ package net.typeblog.screenshot.core
 
 import android.graphics.Bitmap
 
+@Suppress("EqualsOrHashCode") // we don't need hashcode in this case
 class BitmapLine(bmp: Bitmap, line: Int,
                  private val threshold: Float,
                  private val widthIndicies: IntArray) {

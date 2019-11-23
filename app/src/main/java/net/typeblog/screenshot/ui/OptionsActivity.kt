@@ -211,7 +211,7 @@ class OptionsActivity: AppCompatActivity() {
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
 
-        menu!!.add(0, ID_MENU_HELP, 0, R.string.help).apply {
+        menu.add(0, ID_MENU_HELP, 0, R.string.help).apply {
             icon = getDrawable(R.drawable.ic_help_outline_black_24dp)
             setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
         }
