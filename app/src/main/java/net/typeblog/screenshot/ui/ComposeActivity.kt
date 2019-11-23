@@ -9,6 +9,7 @@ import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -161,19 +162,32 @@ class ComposeActivity: AppCompatActivity() {
         return false
     }
 
+    private fun assertPicNum(fn: () -> Unit) {
+        if (mUris.size < 2) {
+            Toast.makeText(this, R.string.not_enough_pictures, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        fn()
+    }
+
     private fun doCompose() {
-        ComposeProgressDialogFragment(mUris, mSensitivity, mSkip, mSampleRatio)
-            .show(supportFragmentManager, "PROGRESS")
+        assertPicNum {
+            ComposeProgressDialogFragment(mUris, mSensitivity, mSkip, mSampleRatio)
+                .show(supportFragmentManager, "PROGRESS")
+        }
     }
 
     private fun doSettings() {
-        startActivityForResult(Intent(this, OptionsActivity::class.java).apply {
-            putExtra("sensitivity", mSensitivity)
-            putExtra("skip", mSkip)
-            putExtra("sample_ratio", mSampleRatio)
-            putExtra("bmp1", mUris[0])
-            putExtra("bmp2", mUris[1])
-        }, REQUEST_SETTINGS)
+        assertPicNum {
+            startActivityForResult(Intent(this, OptionsActivity::class.java).apply {
+                putExtra("sensitivity", mSensitivity)
+                putExtra("skip", mSkip)
+                putExtra("sample_ratio", mSampleRatio)
+                putExtra("bmp1", mUris[0])
+                putExtra("bmp2", mUris[1])
+            }, REQUEST_SETTINGS)
+        }
     }
 
     data class SelectionViewHolder(
