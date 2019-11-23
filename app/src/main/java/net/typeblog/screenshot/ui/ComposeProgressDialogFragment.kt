@@ -50,7 +50,7 @@ class ComposeProgressDialogFragment(
 
             mProgressDiff = horizontalProgressBar {
                 id = ID_PROGRESS_DIFF
-                isIndeterminate = false
+                isIndeterminate = true
             }.lparams {
                 width = matchParent
                 height = wrapContent
@@ -58,15 +58,13 @@ class ComposeProgressDialogFragment(
 
             mProgressDiffText = textView {
                 id = ID_PROGRESS_DIFF_TEXT
-                textResource = R.string.progress_diff
+                textResource = R.string.loading_pictures
                 gravity = Gravity.CENTER_HORIZONTAL
             }.lparams {
                 width = matchParent
                 height = wrapContent
                 below(ID_PROGRESS_DIFF)
             }
-
-            updateProgressDiff()
         }
     }.view
 
@@ -112,6 +110,7 @@ class ComposeProgressDialogFragment(
     }
 
     private fun updateProgressDiff() {
+        mProgressDiff.isIndeterminate = false
         mProgressDiff.max = mUris.size - 1
         mProgressDiff.progress = mProgressDiffVal - 1
         mProgressDiffText.text = getString(R.string.progress_diff, mProgressDiffVal, mProgressDiffVal + 1, mUris.size)
