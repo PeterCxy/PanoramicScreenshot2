@@ -52,7 +52,7 @@ class ComposeActivity: AppCompatActivity() {
     private var mSkip: Float = 0.5f
     private var mSampleRatio: Int = 4
 
-    val mAddAction: Uri.() -> Unit = {
+    private val mAddAction: Uri.() -> Unit = {
         mUris.add(this)
         mDisplayNames[this] = displayName(this)
         mPreview[this] = getPreview(this)
