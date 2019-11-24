@@ -14,6 +14,7 @@
     <string name="options_note">Note: options below do not affect the resolution and dimension of the final product.</string>
     <string name="not_enough_pictures">Please choose 2 or more pictures first.</string>
     <string name="dimension_mismatch">Picture dimension mismatch.</string>
+    <string name="no_common_part">Cannot find common parts between pictures. Please check and ensure added pictures do share common regions and are in the correct order. If they do, please try decreasing sensitivity in options.</string>
     <string name="loading_pictures">Loading pictures&#8230;</string>
     <string name="add">Add</string>
     <string name="help">Help</string>

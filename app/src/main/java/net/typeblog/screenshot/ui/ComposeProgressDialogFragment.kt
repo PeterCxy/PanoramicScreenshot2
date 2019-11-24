@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 
 import net.typeblog.screenshot.R
@@ -103,6 +104,14 @@ class ComposeProgressDialogFragment(
                 uiThread {
                     Toast.makeText(context!!, R.string.dimension_mismatch, Toast.LENGTH_SHORT)
                         .show()
+                    dismiss()
+                }
+            } catch (e: BitmapDiff.NoCommonFoundException) {
+                uiThread {
+                    AlertDialog.Builder(context!!).apply {
+                        setMessage(R.string.no_common_part)
+                        setPositiveButton(R.string.ok, null)
+                    }.show()
                     dismiss()
                 }
             }

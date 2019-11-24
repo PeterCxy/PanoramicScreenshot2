@@ -10,6 +10,7 @@ class BitmapDiff(bmp1: Bitmap, bmp2: Bitmap,
                  private val mWidthIndices: IntArray,
                  private val mListener: ScreenshotComposer.ProgressListener) {
     class DimensionMismatchException: Exception()
+    class NoCommonFoundException: Exception()
 
     val mBmps: Pair<Bitmap, Bitmap> = Pair(bmp1, bmp2)
 
@@ -42,6 +43,10 @@ class BitmapDiff(bmp1: Bitmap, bmp2: Bitmap,
 
         val commons = lcs(leftLines, rightLines)
         // TODO: how to deal with multiple common substrs?
+        if (commons.isNullOrEmpty()) {
+            throw NoCommonFoundException()
+        }
+
         return commons[0].copy(
             leftStart = commons[0].leftStart + (mBmps.first.height * mSkip).toInt(),
             leftEnd = commons[0].leftEnd + (mBmps.first.height * mSkip).toInt())
