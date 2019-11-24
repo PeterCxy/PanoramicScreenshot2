@@ -1,17 +1,29 @@
 package net.typeblog.screenshot.ui
 
+import android.content.Context
 import android.content.Intent
+import android.graphics.PixelFormat
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.Gravity
+import android.view.WindowManager
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
 import net.typeblog.screenshot.R
+import net.typeblog.screenshot.service.AutoScreenshotService
+import net.typeblog.screenshot.util.isAccessibilityServiceEnabled
 
 import org.jetbrains.anko.*
+import org.jetbrains.anko.design.floatingActionButton
 import org.jetbrains.anko.sdk27.coroutines.*
 
 class MainActivity: AppCompatActivity() {
+    private var mAutoScreenshotFirstTime = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -37,6 +49,75 @@ class MainActivity: AppCompatActivity() {
             }.lparams(width = matchParent, height = wrapContent) {
                 topMargin = dip(20)
             }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                // The AccessibilityService method to produce screenshots is only possible >= P
+                button(R.string.screenshot_helper) {
+                    backgroundResource = attr(android.R.attr.selectableItemBackground).resourceId
+                    textColorResource = attr(R.attr.colorAccent).resourceId
+                    onClick { createFloatingButton() }
+                }.lparams(width = matchParent, height = wrapContent) {
+                    topMargin = dip(5)
+                }
+            }
         }
+    }
+
+    // TODO: Teach users how to use this button (espcially to ignore the notification)
+    private fun createFloatingButton() {
+        if (!Settings.canDrawOverlays(this)) {
+            AlertDialog.Builder(this).apply {
+                setMessage(R.string.enable_overlay_perms)
+                setPositiveButton(R.string.ok) { _, _ ->
+                    startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION))
+                }
+                setNegativeButton(R.string.cancel, null)
+            }.show()
+            return
+        }
+
+        if (!isAccessibilityServiceEnabled(this, AutoScreenshotService::class.java)) {
+            AlertDialog.Builder(this).apply {
+                setMessage(R.string.enable_accessibility)
+                setPositiveButton(R.string.ok) { _, _ ->
+                    startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                }
+                setNegativeButton(R.string.cancel, null)
+            }.show()
+            return
+        }
+
+        mAutoScreenshotFirstTime = true
+        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val view = UI {
+            linearLayout {
+                floatingActionButton {
+                    imageResource = R.drawable.ic_add_a_photo_white_24dp
+                    onClick {
+                        sendBroadcast(Intent(AutoScreenshotService.ACTION_SCREENSHOT).apply {
+                            putExtra("first_time", mAutoScreenshotFirstTime)
+                        })
+                        mAutoScreenshotFirstTime = false
+                    }
+                    onLongClick {
+                        wm.removeView(view)
+                        Toast.makeText(context, R.string.screenshot_finished, Toast.LENGTH_LONG).show()
+                    }
+                }.lparams {
+                    width = wrapContent
+                    height = wrapContent
+                    margin = dip(16)
+                }
+            }
+        }.view
+
+        wm.addView(view, WindowManager.LayoutParams().apply {
+            gravity = Gravity.BOTTOM or Gravity.START
+            type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            width = wrapContent
+            height = wrapContent
+            format = PixelFormat.TRANSLUCENT
+            flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+        })
     }
 }

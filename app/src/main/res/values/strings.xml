@@ -3,6 +3,7 @@
     <string name="start">Start</string>
     <string name="compose">Compose</string>
     <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
     <string name="progress_diff">Image %d and %d of %d</string>
     <string name="composing">Composing&#8230;</string>
     <string name="save">Save</string>
@@ -35,4 +36,9 @@
         scanning time and will not affect the result if not too large. This will not affect the final resolution. Image will still
         be concatenated in their original size.
     </string>
+    <string name="accessibility_service_description">Automatic Screenshot Service</string>
+    <string name="screenshot_helper">Screenshot Helper</string>
+    <string name="enable_overlay_perms">To use this feature, please enable Draw over Apps permission for Panoramic Screenshot after clicking OK.</string>
+    <string name="enable_accessibility">To use this feature, please enable Accessibility Service for Panoramic Screenshot after clicking OK.</string>
+    <string name="screenshot_finished">You can now go back to Panoramic Screenshot, click Start, choose the screenshots you just produced and then compose as usual.</string>
 </resources>
