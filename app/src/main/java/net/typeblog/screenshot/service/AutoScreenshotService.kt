@@ -46,8 +46,8 @@ class AutoScreenshotService: AccessibilityService() {
     private fun scrollAndShot() {
         val gestureBuilder = GestureDescription.Builder()
         val path = Path()
-        path.moveTo(mScreenWidth.toFloat() / 2, mScreenHeight.toFloat() / 2)
-        path.lineTo(mScreenWidth.toFloat() / 2, mScreenHeight.toFloat() / 4)
+        path.moveTo(mScreenWidth.toFloat() / 2, mScreenHeight.toFloat() / 4 * 3)
+        path.lineTo(mScreenWidth.toFloat() / 2, mScreenHeight.toFloat() / 6)
         gestureBuilder.addStroke(GestureDescription.StrokeDescription(path, 100, 500))
         dispatchGesture(gestureBuilder.build(), object : GestureResultCallback() {
             override fun onCompleted(gestureDescription: GestureDescription?) {
