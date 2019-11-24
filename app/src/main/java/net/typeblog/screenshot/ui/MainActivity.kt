@@ -70,7 +70,7 @@ class MainActivity: AppCompatActivity() {
         }
     }
 
-    // TODO: Teach users how to use this button (espcially to ignore the notification)
+    // TODO: Teach users how to use this button (especially to ignore the notification)
     private fun createFloatingButton() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
