@@ -1,11 +1,17 @@
 package net.typeblog.screenshot.ui
 
+import android.Manifest
+import android.annotation.TargetApi
+import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.PixelFormat
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.provider.Settings
 import android.view.Gravity
 import android.view.WindowManager
@@ -19,10 +25,11 @@ import net.typeblog.screenshot.util.isAccessibilityServiceEnabled
 
 import org.jetbrains.anko.*
 import org.jetbrains.anko.design.floatingActionButton
-import org.jetbrains.anko.sdk27.coroutines.*
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onLongClick
 
 class MainActivity: AppCompatActivity() {
-    private var mAutoScreenshotFirstTime = true
+    private var mAutoScreenshotCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,6 +72,17 @@ class MainActivity: AppCompatActivity() {
 
     // TODO: Teach users how to use this button (espcially to ignore the notification)
     private fun createFloatingButton() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                // Ask for external storage permission
+                // This is required for automatic filling after finishing
+                requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 0)
+                return
+            }
+        }
+
         if (!Settings.canDrawOverlays(this)) {
             AlertDialog.Builder(this).apply {
                 setMessage(R.string.enable_overlay_perms)
@@ -87,7 +105,7 @@ class MainActivity: AppCompatActivity() {
             return
         }
 
-        mAutoScreenshotFirstTime = true
+        mAutoScreenshotCount = 0
         val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val view = UI {
             linearLayout {
@@ -95,13 +113,35 @@ class MainActivity: AppCompatActivity() {
                     imageResource = R.drawable.ic_add_a_photo_white_24dp
                     onClick {
                         sendBroadcast(Intent(AutoScreenshotService.ACTION_SCREENSHOT).apply {
-                            putExtra("first_time", mAutoScreenshotFirstTime)
+                            putExtra("first_time", mAutoScreenshotCount == 0)
                         })
-                        mAutoScreenshotFirstTime = false
+                        // Record the count so we can find the screenshots later
+                        mAutoScreenshotCount++
                     }
                     onLongClick {
                         wm.removeView(view)
-                        Toast.makeText(context, R.string.screenshot_finished, Toast.LENGTH_LONG).show()
+                        val showToast = {
+                            Toast.makeText(context, R.string.screenshot_finished, Toast.LENGTH_LONG).show()
+                        }
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            // On Q, we can query for the latest screenshots,
+                            // and fill in ComposeActivity automatically
+                            findLatestPictures()?.let {
+                                startActivity(
+                                    Intent(
+                                        this@MainActivity,
+                                        ComposeActivity::class.java
+                                    ).apply {
+                                        putParcelableArrayListExtra(
+                                            "uris",
+                                            ArrayList(it.reversed())
+                                        )
+                                    })
+                            } ?: showToast()
+                        } else {
+                            showToast()
+                        }
                     }
                 }.lparams {
                     width = wrapContent
@@ -119,5 +159,37 @@ class MainActivity: AppCompatActivity() {
             format = PixelFormat.TRANSLUCENT
             flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
         })
+    }
+
+    // Find the latest screenshots from gallery
+    // which should be the ones the user has just taken
+    @TargetApi(Build.VERSION_CODES.Q)
+    private fun findLatestPictures(): List<Uri>? {
+        if (mAutoScreenshotCount == 0) return null
+
+        val projection = arrayOf(
+            MediaStore.Images.ImageColumns._ID,
+            MediaStore.Images.ImageColumns.DATE_MODIFIED,
+            MediaStore.Images.ImageColumns.RELATIVE_PATH
+        )
+        val cursor = contentResolver
+            .query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection,
+                "${MediaStore.Images.ImageColumns.RELATIVE_PATH} =?",
+                arrayOf("Pictures/Screenshots/"),
+                "${MediaStore.Images.ImageColumns.DATE_MODIFIED} DESC"
+            )
+
+        return if (cursor?.moveToFirst() == true) {
+            (0 until mAutoScreenshotCount).map {
+                val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    cursor.getLong(cursor.getColumnIndex(MediaStore.Images.ImageColumns._ID)))
+                cursor.moveToNext()
+                uri
+            }.also { cursor.close() }.toList()
+        } else {
+            cursor?.close()
+            null
+        }
     }
 }

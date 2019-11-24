@@ -52,6 +52,12 @@ class ComposeActivity: AppCompatActivity() {
     private var mSkip: Float = 0.5f
     private var mSampleRatio: Int = 4
 
+    val mAddAction: Uri.() -> Unit = {
+        mUris.add(this)
+        mDisplayNames[this] = displayName(this)
+        mPreview[this] = getPreview(this)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -95,8 +101,21 @@ class ComposeActivity: AppCompatActivity() {
             setDisplayHomeAsUpEnabled(true)
         }
 
-        // TODO: Allow passing pictures directly here
-        addPictures()
+        val uris = intent.getParcelableArrayListExtra<Uri>("uris")
+        if (uris == null) {
+            addPictures()
+        } else {
+            mProgressBarFrame.visibility = View.VISIBLE
+
+            doAsync {
+                uris.forEach(mAddAction)
+
+                uiThread {
+                    mProgressBarFrame.visibility = View.GONE
+                    mAdapter.notifyDataSetChanged()
+                }
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -106,18 +125,12 @@ class ComposeActivity: AppCompatActivity() {
             mProgressBarFrame.visibility = View.VISIBLE
 
             doAsync {
-                val addAction: Uri.() -> Unit = {
-                    mUris.add(this)
-                    mDisplayNames[this] = displayName(this)
-                    mPreview[this] = getPreview(this)
-                }
-
                 if (data!!.clipData == null || data.clipData!!.itemCount == 0) {
                     // Only one picture is chosen
-                    data.data?.apply(addAction)
+                    data.data?.apply(mAddAction)
                 } else {
                     for (i in 0 until data.clipData!!.itemCount) {
-                        data.clipData!!.getItemAt(i).uri.apply(addAction)
+                        data.clipData!!.getItemAt(i).uri.apply(mAddAction)
                     }
                 }
 
