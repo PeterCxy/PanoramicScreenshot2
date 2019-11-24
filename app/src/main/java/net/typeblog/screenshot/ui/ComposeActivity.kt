@@ -48,7 +48,7 @@ class ComposeActivity: AppCompatActivity() {
     private lateinit var mProgressBarFrame: FrameLayout
 
     // TODO: Make these permanent in SharedPreferences?
-    private var mSensitivity: Float = 0.9f
+    private var mSensitivity: Float = 0.95f
     private var mSkip: Float = 0.5f
     private var mSampleRatio: Int = 4
 
