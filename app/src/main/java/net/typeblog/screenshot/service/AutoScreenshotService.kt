@@ -28,7 +28,6 @@ class AutoScreenshotService: AccessibilityService() {
 
     private val mScreenHeight = Resources.getSystem().displayMetrics.heightPixels
     private val mScreenWidth = Resources.getSystem().displayMetrics.widthPixels
-    private lateinit var mHandler: Handler
 
     override fun onInterrupt() {
 
@@ -40,8 +39,6 @@ class AutoScreenshotService: AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
-        mHandler = Handler(mainLooper)
-
         // This intent is sent from MainActivity's floating button to scroll & produce one screenshot
         registerReceiver(ScreenshotReceiver(), IntentFilter(ACTION_SCREENSHOT))
     }
