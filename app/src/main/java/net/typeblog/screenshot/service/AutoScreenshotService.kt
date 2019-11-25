@@ -50,7 +50,6 @@ class AutoScreenshotService: AccessibilityService() {
             override fun onCompleted(gestureDescription: GestureDescription?) {
                 super.onCompleted(gestureDescription)
                 performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
-                //dismissNotification()
             }
         }, null)
     }
@@ -60,7 +59,6 @@ class AutoScreenshotService: AccessibilityService() {
             if (intent!!.getBooleanExtra("first_time", false)) {
                 // If it's the first time, don't scroll
                 performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
-                //dismissNotification()
             } else {
                 scrollAndShot()
             }
