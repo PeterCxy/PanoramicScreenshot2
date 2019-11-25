@@ -70,11 +70,8 @@ fun isAccessibilityServiceEnabled(
     return false
 }
 
-fun Context.getStatusBarHeight(): Int {
-    var result = 0
-    val resourceId: Int = resources.getIdentifier("status_bar_height", "dimen", "android")
-    if (resourceId > 0) {
-        result = resources.getDimensionPixelSize(resourceId)
-    }
-    return result
+// <https://stackoverflow.com/questions/22289883/notificationlistenerservice-detect-if-application-is-allowed-to-listen-for-noti/34384191>
+fun isNotificationAccessEnabled(context: Context): Boolean {
+    val notificationStr = Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")
+    return !(notificationStr == null || !notificationStr.contains(context.packageName))
 }

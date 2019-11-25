@@ -21,7 +21,9 @@ import androidx.appcompat.app.AppCompatActivity
 
 import net.typeblog.screenshot.R
 import net.typeblog.screenshot.service.AutoScreenshotService
+import net.typeblog.screenshot.service.NotificationDismissService
 import net.typeblog.screenshot.util.isAccessibilityServiceEnabled
+import net.typeblog.screenshot.util.isNotificationAccessEnabled
 
 import org.jetbrains.anko.*
 import org.jetbrains.anko.design.floatingActionButton
@@ -94,6 +96,17 @@ class MainActivity: AppCompatActivity() {
             return
         }
 
+        if (!isNotificationAccessEnabled(this)) {
+            AlertDialog.Builder(this).apply {
+                setMessage(R.string.enable_notification_access)
+                setPositiveButton(R.string.ok) { _, _ ->
+                    startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
+                }
+                setNegativeButton(R.string.cancel, null)
+            }.show()
+            return
+        }
+
         if (!isAccessibilityServiceEnabled(this, AutoScreenshotService::class.java)) {
             AlertDialog.Builder(this).apply {
                 setMessage(R.string.enable_accessibility)
@@ -120,6 +133,9 @@ class MainActivity: AppCompatActivity() {
                     }
                     onLongClick {
                         wm.removeView(view)
+                        // Do not continue to dismiss any screenshot notifications...
+                        sendBroadcast(Intent(NotificationDismissService.ACTION_STOP_DISMISSING_NOTIFICATIONS))
+
                         val showToast = {
                             Toast.makeText(context, R.string.screenshot_finished, Toast.LENGTH_LONG).show()
                         }

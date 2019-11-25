@@ -10,10 +10,7 @@ import android.content.IntentFilter
 import android.content.res.Resources
 import android.graphics.Path
 import android.os.Build
-import android.os.Handler
 import android.view.accessibility.AccessibilityEvent
-import net.typeblog.screenshot.util.getStatusBarHeight
-import org.jetbrains.anko.dip
 
 // The service to automatically scroll the screen and produce screenshots
 // Although the user still needs to manually click on a button each time a new screenshot
@@ -53,23 +50,9 @@ class AutoScreenshotService: AccessibilityService() {
             override fun onCompleted(gestureDescription: GestureDescription?) {
                 super.onCompleted(gestureDescription)
                 performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
-                dismissNotification()
+                //dismissNotification()
             }
         }, null)
-    }
-
-    private fun notificationY(): Float =
-        (getStatusBarHeight() + dip(40)).toFloat()
-
-    // Dismiss the heads-up notification of screenshots
-    // so that they don't end up in our result
-    private fun dismissNotification() {
-        val gestureBuilder = GestureDescription.Builder()
-        val path = Path()
-        path.moveTo(mScreenWidth.toFloat() / 20, notificationY())
-        path.lineTo(mScreenWidth.toFloat(), notificationY())
-        gestureBuilder.addStroke(GestureDescription.StrokeDescription(path, 2000, 500))
-        dispatchGesture(gestureBuilder.build(), null, null)
     }
 
     inner class ScreenshotReceiver: BroadcastReceiver() {
@@ -77,7 +60,7 @@ class AutoScreenshotService: AccessibilityService() {
             if (intent!!.getBooleanExtra("first_time", false)) {
                 // If it's the first time, don't scroll
                 performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
-                dismissNotification()
+                //dismissNotification()
             } else {
                 scrollAndShot()
             }

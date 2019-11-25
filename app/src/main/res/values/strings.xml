@@ -39,6 +39,7 @@
     <string name="accessibility_service_description">Automatic Screenshot Service</string>
     <string name="screenshot_helper">Screenshot Helper</string>
     <string name="enable_overlay_perms">To use this feature, please enable Draw over Apps permission for Panoramic Screenshot after clicking OK.</string>
+    <string name="enable_notification_access">To use this feature, please enable Notification Access for Panoramic Screenshot after clicking OK.</string>
     <string name="enable_accessibility">To use this feature, please enable Accessibility Service for Panoramic Screenshot after clicking OK.</string>
     <string name="screenshot_finished">You can now go back to Panoramic Screenshot, click Start, choose the screenshots you just produced and then compose as usual.</string>
 </resources>
