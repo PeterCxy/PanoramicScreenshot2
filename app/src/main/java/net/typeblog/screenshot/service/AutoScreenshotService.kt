@@ -49,6 +49,9 @@ class AutoScreenshotService: AccessibilityService() {
         dispatchGesture(gestureBuilder.build(), object : GestureResultCallback() {
             override fun onCompleted(gestureDescription: GestureDescription?) {
                 super.onCompleted(gestureDescription)
+                // Sleep for some time because the interface might have not updated yet
+                // This is fine because services are in their own threads
+                Thread.sleep(100)
                 performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
             }
         }, null)
