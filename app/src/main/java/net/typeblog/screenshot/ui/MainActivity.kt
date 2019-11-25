@@ -181,6 +181,7 @@ class MainActivity: AppCompatActivity() {
 
     // Find the latest screenshots from gallery
     // which should be the ones the user has just taken
+    // TODO: implement this on <= P
     @TargetApi(Build.VERSION_CODES.Q)
     private fun findLatestPictures(): List<Uri>? {
         if (mAutoScreenshotCount == 0) return null
