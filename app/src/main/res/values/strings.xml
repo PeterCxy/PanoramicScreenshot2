@@ -38,8 +38,8 @@
     </string>
     <string name="accessibility_service_description">Automatic Screenshot Service</string>
     <string name="screenshot_helper">Screenshot Helper</string>
-    <string name="enable_overlay_perms">To use this feature, please enable Draw over Apps permission for Panoramic Screenshot after clicking OK.</string>
-    <string name="enable_notification_access">To use this feature, please enable Notification Access for Panoramic Screenshot after clicking OK.</string>
-    <string name="enable_accessibility">To use this feature, please enable Accessibility Service for Panoramic Screenshot after clicking OK.</string>
+    <string name="enable_overlay_perms">To use this feature, please enable Draw over Apps permission for Panoramic Screenshot after clicking OK. This is used to display a button to provide automatic scroll &amp; screenshot action.</string>
+    <string name="enable_notification_access">To use this feature, please enable Notification Access for Panoramic Screenshot after clicking OK. This is used to block the system "Screenshot Completed" notifications during a scrolling screenshot session.</string>
+    <string name="enable_accessibility">To use this feature, please enable Accessibility Service for Panoramic Screenshot after clicking OK. This is used to actually scroll and save screenshots of applications automatically.</string>
     <string name="screenshot_finished">You can now go back to Panoramic Screenshot, click Start, choose the screenshots you just produced and then compose as usual.</string>
 </resources>
