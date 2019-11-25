@@ -65,6 +65,7 @@ class MainActivity: AppCompatActivity() {
                     backgroundResource = attr(android.R.attr.selectableItemBackground).resourceId
                     textColorResource = attr(R.attr.colorAccent).resourceId
                     onClick { createFloatingButton() }
+                    isEnabled = !activityManager.isLowRamDevice
                 }.lparams(width = matchParent, height = wrapContent) {
                     topMargin = dip(5)
                 }
