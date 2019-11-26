@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.view.Gravity
+import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 
@@ -27,9 +28,10 @@ import org.jetbrains.anko.sdk27.coroutines.onLongClick
 
 class AutoScreenshotButton(private val mContext: Context) {
     private var mAutoScreenshotCount = 0
+    private lateinit var mButton: View
     private val mView = mContext.UI {
         linearLayout {
-            floatingActionButton {
+            mButton = floatingActionButton {
                 imageResource = R.drawable.ic_add_a_photo_white_24dp
                 onClick {
                     onClick()
@@ -50,6 +52,7 @@ class AutoScreenshotButton(private val mContext: Context) {
     fun show() {
         isShown = true
         mAutoScreenshotCount = 0
+        mButton.isEnabled = true
 
         // Tell NotificationDismissService to start dismissing screenshot events
         EventBus.getDefault().post(
@@ -86,6 +89,12 @@ class AutoScreenshotButton(private val mContext: Context) {
         )
         // Record the count so we can find the screenshots later
         mAutoScreenshotCount++
+
+        // Force a minimal delay between two clicks
+        // This is to ensure at least the last screenshot is being saved
+        // Also to ensure later findLatestPictures() fetches all of them
+        mButton.isEnabled = false
+        mView.postDelayed({ mButton.isEnabled = true }, 3000)
     }
 
     private fun onLongClick() {
