@@ -49,8 +49,10 @@ class AutoScreenshotService: AccessibilityService() {
         super.onServiceConnected()
         mButton = AutoScreenshotButton(
             ContextThemeWrapper(this, R.style.AppTheme))
-        // This event is sent from MainActivity's floating button to scroll & produce one screenshot
-        EventBus.getDefault().register(this)
+
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
     }
 
     override fun onDestroy() {

@@ -17,7 +17,10 @@ class NotificationDismissService: NotificationListenerService() {
 
     override fun onListenerConnected() {
         super.onListenerConnected()
-        EventBus.getDefault().register(this)
+
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this)
+        }
     }
 
     override fun onListenerDisconnected() {
