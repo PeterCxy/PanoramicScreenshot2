@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.database.Cursor
 import android.graphics.PixelFormat
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -29,15 +31,30 @@ import org.jetbrains.anko.sdk27.coroutines.onLongClick
 class AutoScreenshotButton(private val mContext: Context) {
     private var mAutoScreenshotCount = 0
     private lateinit var mButton: View
+    private var isEnabled = true
+    private lateinit var mProgressBar: View
     private val mView = mContext.UI {
         linearLayout {
-            mButton = floatingActionButton {
-                imageResource = R.drawable.ic_add_a_photo_white_24dp
-                onClick {
-                    onClick()
+            progressFab {
+                mButton = floatingActionButton {
+                    imageResource = R.drawable.ic_add_a_photo_white_24dp
+                    onClick {
+                        onClick()
+                    }
+                    onLongClick {
+                        onLongClick()
+                    }
+                }.lparams {
+                    width = wrapContent
+                    height = wrapContent
                 }
-                onLongClick {
-                    onLongClick()
+
+                mProgressBar = progressBar {
+                    indeterminateDrawable.colorFilter = PorterDuffColorFilter(
+                        mContext.getColor(R.color.colorButtonProgress), PorterDuff.Mode.SRC_IN)
+                }.lparams {
+                    width = wrapContent
+                    height = wrapContent
                 }
             }.lparams {
                 width = wrapContent
@@ -52,8 +69,9 @@ class AutoScreenshotButton(private val mContext: Context) {
     fun show() {
         isShown = true
         mAutoScreenshotCount = 0
-        mButton.isEnabled = true
+        isEnabled = true
         mButton.visibility = View.VISIBLE
+        mProgressBar.visibility = View.INVISIBLE
 
         // Tell NotificationDismissService to start dismissing screenshot events
         EventBus.getDefault().post(
@@ -91,6 +109,10 @@ class AutoScreenshotButton(private val mContext: Context) {
     }
 
     private fun onClick() {
+        // Hack: use our own isEnabled state, since the one of the FAB itself
+        //   will remove the elevation and make the progress bar look awful
+        if (!isEnabled) return
+
         EventBus.getDefault().post(
             AutoScreenshotService.TakeScreenshotEvent(
                 mAutoScreenshotCount == 0
@@ -102,8 +124,12 @@ class AutoScreenshotButton(private val mContext: Context) {
         // Force a minimal delay between two clicks
         // This is to ensure at least the last screenshot is being saved
         // Also to ensure later findLatestPictures() fetches all of them
-        mButton.isEnabled = false
-        mView.postDelayed({ mButton.isEnabled = true }, 3000)
+        isEnabled = false
+        mProgressBar.visibility = View.VISIBLE
+        mView.postDelayed({
+            isEnabled = true
+            mProgressBar.visibility = View.INVISIBLE
+        }, 3000)
     }
 
     private fun onLongClick() {

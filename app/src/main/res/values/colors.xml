@@ -6,4 +6,5 @@
     <color name="colorSelected">#F9F9F9</color>
     <color name="black">#000000</color>
     <color name="transparent">#55000000</color>
+    <color name="colorButtonProgress">#9C27B0</color>
 </resources>
