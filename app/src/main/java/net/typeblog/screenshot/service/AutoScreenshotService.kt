@@ -71,12 +71,17 @@ class AutoScreenshotService: AccessibilityService() {
         dispatchGesture(gestureBuilder.build(), object : GestureResultCallback() {
             override fun onCompleted(gestureDescription: GestureDescription?) {
                 super.onCompleted(gestureDescription)
-                // Wait for some time because the interface might have not updated yet
-                mHandler.postDelayed({
-                    performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
-                }, 100)
+                doTakeScreenshot()
             }
         }, null)
+    }
+
+    private fun doTakeScreenshot() {
+        mButton.hideButtonForScreenshot()
+        // Wait for some time because the interface might have not updated yet
+        mHandler.postDelayed({
+            performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
+        }, 100)
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -84,7 +89,7 @@ class AutoScreenshotService: AccessibilityService() {
     fun onTakeScreenshotEvent(ev: TakeScreenshotEvent) {
         if (ev.isFirstTime) {
             // If it's the first time, don't scroll
-            performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
+            doTakeScreenshot()
         } else {
             scrollAndShot()
         }

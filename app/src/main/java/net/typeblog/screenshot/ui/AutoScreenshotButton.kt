@@ -53,6 +53,7 @@ class AutoScreenshotButton(private val mContext: Context) {
         isShown = true
         mAutoScreenshotCount = 0
         mButton.isEnabled = true
+        mButton.visibility = View.VISIBLE
 
         // Tell NotificationDismissService to start dismissing screenshot events
         EventBus.getDefault().post(
@@ -79,6 +80,14 @@ class AutoScreenshotButton(private val mContext: Context) {
         )
 
         mContext.windowManager.removeView(mView)
+    }
+
+    // Temporarily hide the button so that it does not end up in screenshots
+    fun hideButtonForScreenshot() {
+        mButton.visibility = View.INVISIBLE
+        mButton.postDelayed({
+            mButton.visibility = View.VISIBLE
+        }, 500)
     }
 
     private fun onClick() {
