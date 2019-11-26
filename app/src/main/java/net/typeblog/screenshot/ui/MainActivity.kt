@@ -185,7 +185,7 @@ class MainActivity: AppCompatActivity() {
             width = wrapContent
             height = wrapContent
             format = PixelFormat.TRANSLUCENT
-            flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+            flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
         })
     }
 
