@@ -1,5 +1,6 @@
 package net.typeblog.screenshot.service
 
+import android.content.ComponentName
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 
@@ -15,16 +16,23 @@ class NotificationDismissService: NotificationListenerService() {
 
     private var mShouldDismiss = false
 
-    override fun onListenerConnected() {
-        super.onListenerConnected()
-
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this)
-        }
+    init {
+        // Start listening here right away
+        // because listeners in this class affect the state
+        // but does not call any method actively
+        // We have to ensure that the state always gets through
+        EventBus.getDefault().register(this)
     }
 
     override fun onListenerDisconnected() {
         super.onListenerDisconnected()
+        // Plz save me...
+        requestRebind(ComponentName(this, NotificationDismissService::class.java))
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
         EventBus.getDefault().unregister(this)
     }
 
