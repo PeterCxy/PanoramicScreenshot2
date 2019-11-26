@@ -21,6 +21,8 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 
 class MainActivity: AppCompatActivity() {
+    private var mCreatingButton = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -61,9 +63,22 @@ class MainActivity: AppCompatActivity() {
         }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (mCreatingButton && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            createFloatingButton()
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
     // TODO: Teach users how to use this button (especially to ignore the notification)
     // TODO: Find a way to request these in one batch instead of requiring users to click again and again
     private fun createFloatingButton() {
+        mCreatingButton = true
+
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
             != PackageManager.PERMISSION_GRANTED
         ) {
@@ -105,6 +120,8 @@ class MainActivity: AppCompatActivity() {
             }.show()
             return
         }
+
+        mCreatingButton = false
 
         // Let the service show the button, to avoid having this activity referenced by WM
         EventBus.getDefault().post(AutoScreenshotService.ShowButtonEvent())
