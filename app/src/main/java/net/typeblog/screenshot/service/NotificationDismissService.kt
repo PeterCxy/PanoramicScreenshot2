@@ -9,7 +9,7 @@ import org.greenrobot.eventbus.ThreadMode
 
 // Dismisses all screenshot notifications during automatic screenshot sessions
 class NotificationDismissService: NotificationListenerService() {
-    class NotificationDismissEvent(
+    data class NotificationDismissEvent(
         val shouldDismiss: Boolean
     )
 
