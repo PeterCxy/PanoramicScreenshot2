@@ -6,6 +6,8 @@ import android.annotation.TargetApi
 import android.content.res.Resources
 import android.graphics.Path
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.view.accessibility.AccessibilityEvent
 
 import org.greenrobot.eventbus.EventBus
@@ -25,6 +27,8 @@ class AutoScreenshotService: AccessibilityService() {
 
     private val mScreenHeight = Resources.getSystem().displayMetrics.heightPixels
     private val mScreenWidth = Resources.getSystem().displayMetrics.widthPixels
+
+    private val mHandler = Handler(Looper.getMainLooper())
 
     override fun onInterrupt() {
 
@@ -54,10 +58,10 @@ class AutoScreenshotService: AccessibilityService() {
         dispatchGesture(gestureBuilder.build(), object : GestureResultCallback() {
             override fun onCompleted(gestureDescription: GestureDescription?) {
                 super.onCompleted(gestureDescription)
-                // Sleep for some time because the interface might have not updated yet
-                // This is fine because services are in their own threads
-                Thread.sleep(100)
-                performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
+                // Wait for some time because the interface might have not updated yet
+                mHandler.postDelayed({
+                    performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
+                }, 100)
             }
         }, null)
     }
