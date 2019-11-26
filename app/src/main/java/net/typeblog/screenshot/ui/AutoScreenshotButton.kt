@@ -135,6 +135,14 @@ class AutoScreenshotButton(private val mContext: Context) {
         // Same as in onClick()
         if (!isEnabled) return
 
+        // Delay for some reasonable amount of time so that the shot is saved before continuing...
+        // There is really no better way for this... And I think it is reasonable
+        mProgressBar.visibility = View.VISIBLE
+        isEnabled = false
+        mView.postDelayed({ doFinalize() }, 4000)
+    }
+
+    private fun doFinalize() {
         hide()
 
         // Do not continue to dismiss any screenshot notifications...
