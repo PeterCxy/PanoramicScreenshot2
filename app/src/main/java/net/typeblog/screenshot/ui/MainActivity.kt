@@ -24,6 +24,7 @@ import net.typeblog.screenshot.service.AutoScreenshotService
 import net.typeblog.screenshot.service.NotificationDismissService
 import net.typeblog.screenshot.util.isAccessibilityServiceEnabled
 import net.typeblog.screenshot.util.isNotificationAccessEnabled
+import org.greenrobot.eventbus.EventBus
 
 import org.jetbrains.anko.*
 import org.jetbrains.anko.design.floatingActionButton
@@ -120,6 +121,11 @@ class MainActivity: AppCompatActivity() {
             return
         }
 
+        // Tell NotificationDismissService to start dismissing screenshot events
+        EventBus.getDefault().post(
+            NotificationDismissService.NotificationDismissEvent(true)
+        )
+
         mAutoScreenshotCount = 0
         val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val view = UI {
@@ -127,16 +133,20 @@ class MainActivity: AppCompatActivity() {
                 floatingActionButton {
                     imageResource = R.drawable.ic_add_a_photo_white_24dp
                     onClick {
-                        sendBroadcast(Intent(AutoScreenshotService.ACTION_SCREENSHOT).apply {
-                            putExtra("first_time", mAutoScreenshotCount == 0)
-                        })
+                        EventBus.getDefault().post(
+                            AutoScreenshotService.TakeScreenshotEvent(
+                                mAutoScreenshotCount == 0
+                            )
+                        )
                         // Record the count so we can find the screenshots later
                         mAutoScreenshotCount++
                     }
                     onLongClick {
                         wm.removeView(view)
                         // Do not continue to dismiss any screenshot notifications...
-                        sendBroadcast(Intent(NotificationDismissService.ACTION_STOP_DISMISSING_NOTIFICATIONS))
+                        EventBus.getDefault().post(
+                            NotificationDismissService.NotificationDismissEvent(false)
+                        )
 
                         val showToast = {
                             Toast.makeText(context, R.string.screenshot_finished, Toast.LENGTH_LONG).show()

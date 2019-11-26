@@ -32,6 +32,7 @@ dependencies {
     implementation "org.jetbrains.anko:anko-design:0.10.8"
     implementation "org.jetbrains.anko:anko-recyclerview-v7:0.10.8"
     implementation 'com.otaliastudios:zoomlayout:1.7.0'
+    implementation 'org.greenrobot:eventbus:3.1.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'

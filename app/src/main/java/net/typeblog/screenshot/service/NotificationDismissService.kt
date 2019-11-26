@@ -1,25 +1,28 @@
 package net.typeblog.screenshot.service
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+
 // Dismisses all screenshot notifications during automatic screenshot sessions
 class NotificationDismissService: NotificationListenerService() {
-    companion object {
-        const val ACTION_STOP_DISMISSING_NOTIFICATIONS = "net.typeblog.screenshot.ACTION_STOP_DISMISSING_NOTIFICATIONS"
-    }
+    class NotificationDismissEvent(
+        val shouldDismiss: Boolean
+    )
 
     private var mShouldDismiss = false
 
     override fun onListenerConnected() {
         super.onListenerConnected()
-        registerReceiver(ScreenshotReceiver(), IntentFilter(AutoScreenshotService.ACTION_SCREENSHOT).apply{
-            addAction(ACTION_STOP_DISMISSING_NOTIFICATIONS)
-        })
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onListenerDisconnected() {
+        super.onListenerDisconnected()
+        EventBus.getDefault().unregister(this)
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
@@ -33,17 +36,16 @@ class NotificationDismissService: NotificationListenerService() {
         }
     }
 
-    inner class ScreenshotReceiver: BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent == null) return
-            when (intent.action) {
-                AutoScreenshotService.ACTION_SCREENSHOT -> {
-                    mShouldDismiss = true
-                }
-                ACTION_STOP_DISMISSING_NOTIFICATIONS -> {
-                    mShouldDismiss = false
-                }
-            }
-        }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Suppress("unused")
+    fun onNotificationDismissEvent(ev: NotificationDismissEvent) {
+        mShouldDismiss = ev.shouldDismiss
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Suppress("unused", "UNUSED_PARAMETER")
+    fun onScreenshotEvent(ev: AutoScreenshotService.TakeScreenshotEvent) {
+        // Also set shouldDismiss to true each time a screenshot is taken
+        mShouldDismiss = true
     }
 }
