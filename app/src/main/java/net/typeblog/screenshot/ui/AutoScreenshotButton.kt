@@ -132,7 +132,11 @@ class AutoScreenshotButton(private val mContext: Context) {
     }
 
     private fun onLongClick() {
+        // Same as in onClick()
+        if (!isEnabled) return
+
         hide()
+
         // Do not continue to dismiss any screenshot notifications...
         EventBus.getDefault().post(
             NotificationDismissService.NotificationDismissEvent(false)
