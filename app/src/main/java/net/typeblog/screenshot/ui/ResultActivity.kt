@@ -12,6 +12,8 @@ import android.widget.Toast
 
 import net.typeblog.screenshot.R
 
+import org.jetbrains.anko.*
+
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -39,12 +41,22 @@ class ResultActivity: ImageViewActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            ID_MENU_SAVE -> savePicture()
+            ID_MENU_SAVE -> savePicture(item)
         }
         return false
     }
 
-    private fun savePicture() {
+    private fun savePicture(item: MenuItem) {
+        // Set the item to be a indeterminate progress bar
+        item.actionView = UI {
+            linearLayout {
+                progressBar().lparams {
+                    margin = dip(10)
+                }
+            }
+        }.view
+        item.isEnabled = false
+
         // Generate a file name based on date
         val dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss")
         val name = dtf.format(LocalDateTime.now())
@@ -59,12 +71,20 @@ class ResultActivity: ImageViewActivity() {
             }
         }
 
-        contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)?.let {
-            contentResolver.openOutputStream(it).also { stream ->
+        doAsync {
+            contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)?.let {
+                val stream = contentResolver.openOutputStream(it)
                 picBmp!!.compress(Bitmap.CompressFormat.PNG, 100, stream)
-                Toast.makeText(this@ResultActivity,
-                    getString(R.string.saved_to, SAVE_PATH),
-                    Toast.LENGTH_LONG).show()
+
+                uiThread {
+                    item.actionView = null
+                    item.isEnabled = true
+                    Toast.makeText(
+                        this@ResultActivity,
+                        getString(R.string.saved_to, SAVE_PATH),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
     }
