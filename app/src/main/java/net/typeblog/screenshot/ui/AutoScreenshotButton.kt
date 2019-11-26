@@ -4,6 +4,7 @@ import android.annotation.TargetApi
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.graphics.PixelFormat
 import android.net.Uri
 import android.os.Build
@@ -98,46 +99,66 @@ class AutoScreenshotButton(private val mContext: Context) {
             Toast.makeText(mContext, R.string.screenshot_finished, Toast.LENGTH_LONG).show()
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // On Q, we can query for the latest screenshots,
-            // and fill in ComposeActivity automatically
-            findLatestPictures()?.let {
-                mContext.startActivity(
-                    Intent(
-                        mContext,
-                        ComposeActivity::class.java
-                    ).apply {
-                        putParcelableArrayListExtra(
-                            "uris",
-                            ArrayList(it.reversed())
-                        )
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    })
-            } ?: showToast()
-        } else {
-            showToast()
-        }
+        // fill in ComposeActivity automatically
+        findLatestPictures()?.let {
+            mContext.startActivity(
+                Intent(
+                    mContext,
+                    ComposeActivity::class.java
+                ).apply {
+                    putParcelableArrayListExtra(
+                        "uris",
+                        ArrayList(it.reversed())
+                    )
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                })
+        } ?: showToast()
     }
 
-    // Find the latest screenshots from gallery
-    // which should be the ones the user has just taken
-    // TODO: implement this on <= P
     @TargetApi(Build.VERSION_CODES.Q)
-    private fun findLatestPictures(): List<Uri>? {
-        if (mAutoScreenshotCount == 0) return null
-
+    private fun queryLatestPicturesQ(): Cursor? {
         val projection = arrayOf(
             MediaStore.Images.ImageColumns._ID,
             MediaStore.Images.ImageColumns.DATE_MODIFIED,
             MediaStore.Images.ImageColumns.RELATIVE_PATH
         )
-        val cursor = mContext.contentResolver
+
+        return mContext.contentResolver
             .query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection,
                 "${MediaStore.Images.ImageColumns.RELATIVE_PATH} =?",
                 arrayOf("Pictures/Screenshots/"),
                 "${MediaStore.Images.ImageColumns.DATE_MODIFIED} DESC"
             )
+    }
+
+    @TargetApi(Build.VERSION_CODES.P)
+    private fun queryLatestPicturesP(): Cursor? {
+        val projection = arrayOf(
+            MediaStore.Images.ImageColumns._ID,
+            MediaStore.Images.ImageColumns.DATE_MODIFIED,
+            MediaStore.Images.ImageColumns.DATA
+        )
+
+        return mContext.contentResolver
+            .query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection,
+                "${MediaStore.Images.ImageColumns.DATA} like ?",
+                arrayOf("%Pictures/Screenshots%"),
+                "${MediaStore.Images.ImageColumns.DATE_MODIFIED} DESC"
+            )
+    }
+
+    // Find the latest screenshots from gallery
+    // which should be the ones the user has just taken
+    private fun findLatestPictures(): List<Uri>? {
+        if (mAutoScreenshotCount == 0) return null
+
+        val cursor = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            queryLatestPicturesQ()
+        } else {
+            queryLatestPicturesP()
+        }
 
         return if (cursor?.moveToFirst() == true) {
             (0 until mAutoScreenshotCount).map {
