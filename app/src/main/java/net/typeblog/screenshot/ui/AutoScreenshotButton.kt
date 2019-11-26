@@ -12,6 +12,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.view.Gravity
+import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
@@ -134,6 +135,7 @@ class AutoScreenshotButton(private val mContext: Context) {
     private fun onLongClick() {
         // Same as in onClick()
         if (!isEnabled) return
+        mView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
 
         // Delay for some reasonable amount of time so that the shot is saved before continuing...
         // There is really no better way for this... And I think it is reasonable
