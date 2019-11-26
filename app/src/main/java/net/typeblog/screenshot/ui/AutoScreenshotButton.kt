@@ -84,9 +84,9 @@ class AutoScreenshotButton(private val mContext: Context) {
 
     // Temporarily hide the button so that it does not end up in screenshots
     fun hideButtonForScreenshot() {
-        mButton.visibility = View.INVISIBLE
-        mButton.postDelayed({
-            mButton.visibility = View.VISIBLE
+        mView.visibility = View.INVISIBLE
+        mView.postDelayed({
+            mView.visibility = View.VISIBLE
         }, 500)
     }
 
