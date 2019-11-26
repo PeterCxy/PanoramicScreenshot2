@@ -30,13 +30,12 @@ import org.jetbrains.anko.sdk27.coroutines.onLongClick
 
 class AutoScreenshotButton(private val mContext: Context) {
     private var mAutoScreenshotCount = 0
-    private lateinit var mButton: View
     private var isEnabled = true
     private lateinit var mProgressBar: View
     private val mView = mContext.UI {
         linearLayout {
             progressFab {
-                mButton = floatingActionButton {
+                floatingActionButton {
                     imageResource = R.drawable.ic_add_a_photo_white_24dp
                     onClick {
                         onClick()
@@ -70,7 +69,7 @@ class AutoScreenshotButton(private val mContext: Context) {
         isShown = true
         mAutoScreenshotCount = 0
         isEnabled = true
-        mButton.visibility = View.VISIBLE
+        mView.visibility = View.VISIBLE
         mProgressBar.visibility = View.INVISIBLE
 
         // Tell NotificationDismissService to start dismissing screenshot events
