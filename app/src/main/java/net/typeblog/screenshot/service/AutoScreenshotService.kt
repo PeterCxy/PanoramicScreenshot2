@@ -9,6 +9,10 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.view.accessibility.AccessibilityEvent
+import androidx.appcompat.view.ContextThemeWrapper
+
+import net.typeblog.screenshot.R
+import net.typeblog.screenshot.ui.AutoScreenshotButton
 
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -24,11 +28,14 @@ class AutoScreenshotService: AccessibilityService() {
     data class TakeScreenshotEvent(
         val isFirstTime: Boolean
     )
+    class ShowButtonEvent
 
     private val mScreenHeight = Resources.getSystem().displayMetrics.heightPixels
     private val mScreenWidth = Resources.getSystem().displayMetrics.widthPixels
 
     private val mHandler = Handler(Looper.getMainLooper())
+
+    private lateinit var mButton: AutoScreenshotButton
 
     override fun onInterrupt() {
 
@@ -40,12 +47,16 @@ class AutoScreenshotService: AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
+        mButton = AutoScreenshotButton(
+            ContextThemeWrapper(this, R.style.AppTheme))
         // This event is sent from MainActivity's floating button to scroll & produce one screenshot
         EventBus.getDefault().register(this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        // If we are getting destroyed...
+        mButton.hide()
         EventBus.getDefault().unregister(this)
     }
 
@@ -74,6 +85,14 @@ class AutoScreenshotService: AccessibilityService() {
             performGlobalAction(GLOBAL_ACTION_TAKE_SCREENSHOT)
         } else {
             scrollAndShot()
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Suppress("unused", "UNUSED_PARAMETER")
+    fun onShowButton(ev: ShowButtonEvent) {
+        if (!mButton.isShown) {
+            mButton.show()
         }
     }
 }
